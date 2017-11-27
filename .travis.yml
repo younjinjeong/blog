@@ -20,7 +20,16 @@ deploy:
   provider: pages
   repo: younjinjeong/younjinjeong.github.io
   skip_cleanup: true
-  local_dir: public
+  local_dir: public/prod
   github_token: $GITHUB_TOKEN # Set in travis-ci.org dashboard
   on:
     branch: master
+
+deploy:
+  provider: cloudfoundry
+  username: $CF_USER
+  password: $CF_PASSWROD
+  api: https://api.run.pivotal.io
+  organization: yjeong-org
+  space: staging
+  local_dir: public/staging

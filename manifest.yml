@@ -10,7 +10,7 @@ applications:
   services:
     - keen.io
     - pushpop-sendgrid-account
-- name: pivotal-cf-blog
+- name: younjinjeong-blog.cfapps.io
   path: ./public/prod
   memory: 64M
   disk: 200M
