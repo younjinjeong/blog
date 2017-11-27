@@ -70,6 +70,6 @@ fabric.properties
 blog.iml
 
 # Ignore publid files
-# public
+public
 
 # End of https://www.gitignore.io/api/intellij
