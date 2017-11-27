@@ -6,8 +6,13 @@
 
 
 
-아래는 Pivotal 에서의 좋은글 쓰기에 대한 소개  및 본 블로그의 구동방식에 대해 소개하고 있습니다. 
+ 
 
+production: http://blog.younjinjeong.io
+
+staging: http://blog-staging.younjinjeong.io 
+
+아래는 Pivotal 에서의 좋은글 쓰기에 대한 소개  및 본 블로그의 구동방식에 대해 소개하고 있습니다.
 (younjin.jeong@gmail.com, 정윤진)
 
 ## Writing a _Good_ Post
