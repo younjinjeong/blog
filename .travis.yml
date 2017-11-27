@@ -10,7 +10,7 @@ install:
 
 # Build the website
 script:
-  - /bin/build
+  - bin/build
 
 # Deploy to GitHub pages
 deploy:
