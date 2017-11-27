@@ -1,0 +1,13 @@
+languageCode: en-us
+Theme: "yjeong-ui"
+Title: Younjin Jeong's Blog
+taxonomies:
+  tag: "tags"
+  category: "categories"
+  author: "authors"
+Params:
+  SubTitle: Technical & Emotional stuffs
+baseURL: "http://younjinjeong.io"
+# googleAnalytics: UA-39702075-1
+rssLimit: 25
+...

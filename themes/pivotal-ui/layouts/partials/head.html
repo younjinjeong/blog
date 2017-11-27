@@ -1,0 +1,67 @@
+{{/* code for displaying categories and tags */}}
+{{ $.Scratch.Set "replace_title" .Title }}
+{{ if .Data.Singular }}
+  {{ range .Data.Pages }}
+    {{ range $title1 := .Params.categories }}
+      {{ $tmp_title1 := printf "%s" $title1 | urlize }}
+      {{ $tmp_title2 := printf "%s" $.Title | urlize }}
+      {{ if eq $tmp_title1 $tmp_title2 }}
+        {{ $.Scratch.Set "replace_title" $title1 }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{/* code for displaying author names */}}
+{{ $heading_type := $.Scratch.Get "heading_type" }}
+{{ if eq $heading_type "author" }}
+{{ $author := $.Scratch.Get "author" }}
+{{ $.Scratch.Set "replace_title" $author }}
+{{ end }}
+
+{{ $replace_title := $.Scratch.Get "replace_title" }}
+<head>
+  <meta charset="utf-8">
+  <title>{{ if eq $replace_title .Site.Title }}{{ $replace_title }}{{else}}{{ $replace_title }} &middot; {{ .Site.Title }}{{ end }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/pivotal-ui.css">
+  <link rel="stylesheet" href="/styleguide.css">
+  <link rel="stylesheet" href="/github.css">
+  <link rel="stylesheet" href="/local.css">
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+
+  <meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}" />
+  <meta property="og:title" content="{{ .Title }}" />
+  <meta property="og:site_name" content="{{ .Site.Title }}" />
+  <meta property="og:url" content="{{ .Permalink }}" />
+  {{ with or .Params.short .Site.Params.SubTitle }}
+    <meta property="og:description" content="{{ . }}" />
+  {{ end }}
+  {{ if .Params.Image }}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="og:image" content="{{ .Params.image | absURL }}" />
+    <meta name="twitter:image:alt" content="{{ .Site.Title }}" />
+  {{ else }}
+    <meta name="twitter:card" content="summary" />
+  {{ end }}
+  <meta name="twitter:site" content="@pivotaleng" />
+  {{ $all := .Site.Data.authors }}
+  {{ with $authors := .Params.authors }}
+    {{ $len := (len $authors) }}
+    {{ range $index, $author := $authors }}
+      {{ with $a := (index $all $author) }}
+        {{ if $a.Twitter }}<meta name="twitter:creator" content="@{{ $a.Twitter }}" />{{ end }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+  {{ partial "schema.html" . }}
+
+  <!-- The feedburner account is managed by Tammer.  Contact him for any tweaks. -->
+  <link href="http://feeds.feedburner.com/PivotalEngineeringJournal" rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" />
+  <script type="text/javascript">
+    !function(){var analytics=window.analytics=window.analytics||[];if(!analytics.initialize)if(analytics.invoked)window.console&&console.error&&console.error("Segment snippet included twice.");else{analytics.invoked=!0;analytics.methods=["trackSubmit","trackClick","trackLink","trackForm","pageview","identify","reset","group","track","ready","alias","page","once","off","on"];analytics.factory=function(t){return function(){var e=Array.prototype.slice.call(arguments);e.unshift(t);analytics.push(e);return analytics}};for(var t=0;t<analytics.methods.length;t++){var e=analytics.methods[t];analytics[e]=analytics.factory(e)}analytics.load=function(t){var e=document.createElement("script");e.type="text/javascript";e.async=!0;e.src=("https:"===document.location.protocol?"https://":"http://")+"cdn.segment.com/analytics.js/v1/"+t+"/analytics.min.js";var n=document.getElementsByTagName("script")[0];n.parentNode.insertBefore(e,n)};analytics.SNIPPET_VERSION="3.1.0";
+    analytics.load("IXkeNhIzBzaeGy3unx4FdDlMHcktimlM");
+    analytics.page()
+    }}();
+  </script>
+</head>
