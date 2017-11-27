@@ -2,23 +2,23 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Subtitle on Younjin Jeong&#39;s Blog</title>
-    <link>http://engineering.pivotal.io/categories/subtitle/</link>
+    <link>http://younjinjeong.io/categories/subtitle/</link>
     <description>Recent content in Subtitle on Younjin Jeong&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 21 Nov 2017 06:34:12 -0400</lastBuildDate>
-    <atom:link href="http://engineering.pivotal.io/categories/subtitle/" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 26 Nov 2017 06:34:12 -0400</lastBuildDate>
+    <atom:link href="http://younjinjeong.io/categories/subtitle/" rel="self" type="application/rss+xml" />
     
     <item>
       <title>ffmpeg 를 사용한 자막 입히기 및 위치 조정</title>
-      <link>http://engineering.pivotal.io/post/ffmpeg-subtitle-embeded/</link>
-      <pubDate>Tue, 21 Nov 2017 06:34:12 -0400</pubDate>
+      <link>http://younjinjeong.io/post/ffmpeg-subtitle-embeded/</link>
+      <pubDate>Sun, 26 Nov 2017 06:34:12 -0400</pubDate>
         
         
         <author>
         younjin.jeong@gmail.com (Younjin Jeong)
         </author>
-      <guid>http://engineering.pivotal.io/post/ffmpeg-subtitle-embeded/</guid>
+      <guid>http://younjinjeong.io/post/ffmpeg-subtitle-embeded/</guid>
       <description>&lt;p&gt;간혹 이런 저런 목적으로 유튜브에 비디오를 자막과 함께 올리는데, 유튜브의 경우 특정 자막이 포함된 링크를 생성하는 것이 불가능하여 아예 자막을 영상에 구워서 업로드 하는 방법을  사용하고 있다. 관련해서 매우 많은 다양한 도구가 있지만, 편의상 사용하는 방법은 아래와 같다.&lt;/p&gt;
 
 &lt;ol&gt;

@@ -10,6 +10,7 @@ install:
 
 # Build the website
 script:
+  - tar xvzf hugo_0.31_Linux-64bit.tar.gz -C /bin/
   - bin/build
 
 # Deploy to GitHub pages

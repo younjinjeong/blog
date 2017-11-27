@@ -2,23 +2,23 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Cunnie on Younjin Jeong&#39;s Blog</title>
-    <link>http://engineering.pivotal.io/authors/cunnie/</link>
+    <link>http://younjinjeong.io/authors/cunnie/</link>
     <description>Recent content in Cunnie on Younjin Jeong&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Fri, 24 Nov 2017 14:06:25 +0000</lastBuildDate>
-    <atom:link href="http://engineering.pivotal.io/authors/cunnie/" rel="self" type="application/rss+xml" />
+    <atom:link href="http://younjinjeong.io/authors/cunnie/" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Maintaining BOSH Directors with Concourse CI and bosh-deployment</title>
-      <link>http://engineering.pivotal.io/post/bosh-deployed-with-concourse/</link>
+      <link>http://younjinjeong.io/post/bosh-deployed-with-concourse/</link>
       <pubDate>Fri, 24 Nov 2017 14:06:25 +0000</pubDate>
         
         
         <author>
         
         </author>
-      <guid>http://engineering.pivotal.io/post/bosh-deployed-with-concourse/</guid>
+      <guid>http://younjinjeong.io/post/bosh-deployed-with-concourse/</guid>
       <description>
 
 &lt;p&gt;&lt;em&gt;&amp;ldquo;BOSH deploys Concourse, and Concourse deploys BOSH&amp;rdquo; —Cloud Foundry koan&lt;/em&gt;&lt;/p&gt;
