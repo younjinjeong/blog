@@ -1,15 +1,15 @@
 ---
 applications:
-- name: pushpop
-  path: ./pushpop
-  memory: 64M
-  disk: 200M
-  command: bundle exec pushpop jobs:run
-  no-route: true
-  health-check-type: none
-  services:
-    - keen.io
-    - pushpop-sendgrid-account
+#- name: pushpop
+#  path: ./pushpop
+#  memory: 64M
+#  disk: 200M
+#  command: bundle exec pushpop jobs:run
+#  no-route: true
+#  health-check-type: none
+#  services:
+    # - keen.io
+    # - pushpop-sendgrid-account
 - name: younjinjeong-blog.cfapps.io
   path: ./public/prod
   memory: 64M
