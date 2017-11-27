@@ -17,20 +17,18 @@ script:
 
 # Deploy to GitHub pages
 deploy:
-  provider: pages
-  repo: younjinjeong/younjinjeong.github.io
-  skip_cleanup: true
-  local_dir: public/prod
-  github_token: $GITHUB_TOKEN # Set in travis-ci.org dashboard
-  on:
-    branch: master
+  - provider: pages
+    repo: younjinjeong/younjinjeong.github.io
+    skip_cleanup: true
+    local_dir: public/prod/
+    github_token: $GITHUB_TOKEN # Set in travis-ci.org dashboard
+    on:
+      branch: master
 
-# Deploy to Pivotal Web Services
-deploy:
-  provider: cloudfoundry
-  username: $CF_USER
-  password: $CF_PASSWORD
-  api: https://api.run.pivotal.io
-  organization: yjeong-org
-  space: staging
-  local_dir: public/staging
+  - provider: cloudfoundry
+    username: $CF_USER
+    password: $CF_PASSWORD
+    api: https://api.run.pivotal.io
+    organization: yjeong-org
+    space: staging
+    local_dir: public/staging
