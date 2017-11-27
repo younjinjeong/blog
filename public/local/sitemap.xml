@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>http://localhost/post/bosh-deployed-with-concourse/</loc>
+    <lastmod>2017-11-24T14:06:25+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://localhost/post/ffmpeg-subtitle-embeded/</loc>
+    <lastmod>2017-11-21T06:34:12-04:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://localhost/tweet/placeholder/</loc>
+    <lastmod>2000-12-18T12:55:40-05:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://localhost/categories/agile/</loc>
+    <lastmod>2000-12-18T12:55:40-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/authors/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/categories/bosh/</loc>
+    <lastmod>2017-11-24T14:06:25+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/categories/</loc>
+    <lastmod>2000-12-18T12:55:40-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/categories/concourse/</loc>
+    <lastmod>2017-11-24T14:06:25+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/authors/cunnie/</loc>
+    <lastmod>2017-11-24T14:06:25+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/categories/ffmpeg/</loc>
+    <lastmod>2017-11-21T06:34:12-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/authors/flavorjones/</loc>
+    <lastmod>2000-12-18T12:55:40-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/authors/forde/</loc>
+    <lastmod>2000-12-18T12:55:40-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/categories/humans/</loc>
+    <lastmod>2000-12-18T12:55:40-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/post/</loc>
+    <lastmod>2017-11-24T14:06:25+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/categories/subtitle/</loc>
+    <lastmod>2017-11-21T06:34:12-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/tags/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/categories/tip/</loc>
+    <lastmod>2017-11-21T06:34:12-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/tweet/</loc>
+    <lastmod>2000-12-18T12:55:40-05:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/authors/younjin/</loc>
+    <lastmod>2017-11-21T06:34:12-04:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://localhost/</loc>
+    <lastmod>2017-11-24T14:06:25+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+</urlset>
