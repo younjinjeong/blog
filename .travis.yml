@@ -2,7 +2,7 @@
 addons:
   apt:
     packages:
-      - python-pygments
+      # - python-pygments   # Syntax highlighting is already provided
 
 # Clean and don't fail
 install:
@@ -10,7 +10,9 @@ install:
 
 # Build the website
 script:
-  - tar xvzf bin/hugo_0.31_Linux-64bit.tar.gz -C /bin/
+  - tar xvzf bin/hugo_0.31_Linux-64bit.tar.gz -C bin/
+  - chmod +x bin/hugo
+  - export PATH=$PATH:bin/
   - bin/build
 
 # Deploy to GitHub pages
