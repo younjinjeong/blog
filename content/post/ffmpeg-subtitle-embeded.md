@@ -28,13 +28,11 @@ package used: ffmpeg 를 사용한 자막 입히기 및 위치 조정
 
 
 .srt 자막을 .ass 로 변경하는 커맨드는 다음과 같다 
-
 ~~~bash
 ffmpeg -i input.srt output.ass 
 ~~~ 
 
 output.ass 파일을 열면 아래와 같은 포멧을 볼 수 있다 
-
 ~~~bash
 [Script Info]
 
