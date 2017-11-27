@@ -20,7 +20,7 @@ deploy:
   - provider: pages
     repo: younjinjeong/younjinjeong.github.io
     skip_cleanup: true
-    local_dir: public/prod/
+    local_dir: public/tech/
     github_token: $GITHUB_TOKEN # Set in travis-ci.org dashboard
     on:
       branch: master
