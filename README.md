@@ -1,46 +1,14 @@
-# The Pivotal Engineering Journal
+# Younjin Jeong's Blog
 
-Welcome to our little slice of the internets!  [This blog](http://engineering.pivotal.io/) is dedicated to technical (and cultural) posts by the Pivotal Engineering team.  If that's you, then *please*, *please*, *please* contribute!
+본 블로그는 최근 다양하게 사용되고 있는 소프트웨어 엔지니어링 관련 도구의 소개, 테스트등의 목적을 위해 준비 되었습니다. 
+블로그는 http://engineering.pivotal.io 에서 hugo 를 기반으로 사용중인 테마 및 도구들을 가져다 사용하고 있으며, 기본적으로 markdown 을 이용해 작성된 포스팅은 TravisCI 를 거쳐 각각 Cloud Foundry 와 github 에 배포되고 있습니다. 
 
-This blog is built and maintained entirely by *you*!  Feel free to propose or just implement any improvement you believe in.  ANARCHY!!!!
 
-To discuss the blog, [join the Google Group](https://groups.google.com/a/pivotal.io/forum/#!members/engineering-blog), or jump into the [Slack channel](https://pivotal.slack.com/messages/C532XUA2W/).
 
-## Contributing
 
-1. [Write your post](https://github.com/pivotal/blog#writing-a-post) as a draft.
-1. [Preview it](http://pivotal-cf-blog-staging.cfapps.io/) on staging.
-1. [Make it good](https://github.com/pivotal/blog#writing-a-good-post). Gather feedback from your engineering peers.  Iterate, repeat.
-1. [Ship it!](https://github.com/pivotal/blog#publishing-your-copy)
+아래는 Pivotal 에서의 좋은글 쓰기에 대한 소개  및 본 블로그의 구동방식에 대해 소개하고 있습니다. 
 
-Every commit to master is [auto-deployed to both production and staging](https://travis-ci.org/pivotal/blog/builds) (only staging shows drafts), and then automatically tweeted by [@pivotaleng](https://twitter.com/pivotaleng).
-
-If you don't have push access, then send an ask ticket to have yourself added to the `all-pivots` github team in this org.
-
-## Writing a Post
-
-It's a good idea to join the [Slack channel](https://pivotal.slack.com/messages/C532XUA2W/), if only to get notifications on build failures, etc.  It's also a good place to discuss article topics.
-
-1. Add yourself as an author (first time only, obvs.):
-
-    ~~~
-    $ cp data/authors/tammer.yml data/authors/bob.yml
-    $ vi data/authors/bob.yml
-    ~~~
-
-1. Create a new draft post:
-
-    ~~~
-    bin/new_post name-of-post
-    ~~~
-
- This creates a new file at location `content/post/name-of-post.md`. It's
- markdown, and the template provides instructions on any advanced bits.  Be sure
- to change the metadata in the file's YAML front-matter &mdash; one thing to
- change immediately is the `authors:` value; it should include the name of your
- author file (`bob` in the example above) in the list.
-
-1. *Meta:* If you want to change the default new post template, it's in `archetypes/post.md`.
+(younjin.jeong@gmail.com, 정윤진)
 
 ## Writing a _Good_ Post
 
