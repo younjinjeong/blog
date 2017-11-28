@@ -17,8 +17,15 @@ applications:
   buildpack: https://github.com/cloudfoundry/staticfile-buildpack.git
   services:
     - blog-autoscaler
+    - blog-younjinjeong-log
 - name: younjinjeong-staging
   path: ./public/staging
+  memory: 64M
+  disk: 200M
+  buildpack: https://github.com/cloudfoundry/staticfile-buildpack.git
+
+- name: younjinjeong-cdn
+  path: ./public/cdn
   memory: 64M
   disk: 200M
   buildpack: https://github.com/cloudfoundry/staticfile-buildpack.git

@@ -5,6 +5,7 @@ set -e
 rm -rf public
 echo "Production for PWS..." && hugo --quiet -b http://blog.younjinjeong.io                    -d public/prod
 echo "Production for GitHub..." && hugo --quiet -b http://tech.younjinjeong.io                 -d public/tech
-echo "Staging..."    && hugo --quiet -b http://blog-staging.younjinjeong.io    -d public/staging --buildDrafts
-echo "Local..."      && hugo --quiet -b http://localhost                          -d public/local --buildDrafts $@
+echo "Production for CloudFront CDN..." && hugo --quiet -b http://cdn.younjinjeong.io          -d public/cdn
+echo "Staging..."    && hugo --quiet -b http://blog-staging.younjinjeong.io                    -d public/staging --buildDrafts
+echo "Local..."      && hugo --quiet -b http://localhost                                       -d public/local --buildDrafts $@
 
