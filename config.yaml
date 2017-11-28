@@ -6,7 +6,7 @@ taxonomies:
   category: "categories"
   author: "authors"
 Params:
-  SubTitle: Technical & Emotional stuffs
+  SubTitle: Get busy living, or get busy dying
 baseURL: "http://blog.younjinjeong.io"
 # googleAnalytics: UA-39702075-1
 rssLimit: 25

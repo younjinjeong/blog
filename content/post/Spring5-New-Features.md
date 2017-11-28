@@ -13,7 +13,7 @@ title: 스프링 프레임워크 5의 새로운 기능
 
 스프링 프레임워크의 최신 메이저 버전인 5가 지난 9월에 발표된 이후 중요한 업데이트에 대해 간단하게 정리해 본다. 정식 문서는 [여기](https://docs.spring.io/spring/docs/current/spring-framework-reference/)에서 참고해 볼 수 있겠다. 본 내용은 한국 스프링 사용자 그룹에서 진행한 Java & Spring 행사에서 소개 된 내용으로, 대부분 피보탈의 이창재 (Jay Lee, jaylee@pivotal.io)님께서 작성해 주신것을 기반으로 블로그화 했다.  
 
-
+다운로드 가능한 슬라이드 버전은 [여기](https://www.slideshare.net/PivotalKorea/spring5-new-features-nov-2017) 
 Juregen Hoeller 가 작성한 업데이트 리뷰 정보는 [여기](https://github.com/spring-projects/spring-framework/wiki/What's-New-in-Spring-Framework-5.x)
 
 
