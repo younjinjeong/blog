@@ -6,7 +6,7 @@ categories:
 - Static Web 
 - CI/CD
 date: 2017-11-27T16:16:22Z
-draft: false
+draft: true
 short: |
   CI/CD 의 기본 방법을 사용한 본 블로그의 동작 방식에 대해 소개 합니다. 
 title: 이 블로그는 어떻게 동작하는가
