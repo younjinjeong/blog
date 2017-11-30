@@ -4,6 +4,7 @@ authors:
 categories:
 - News
 - Pivotal 
+- SHI
 - Spring Framework
 date: 2017-11-27T06:34:12-04:00
 short: |
