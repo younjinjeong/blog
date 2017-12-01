@@ -263,6 +263,8 @@ $ cf cups blog-younjinjeong-log -l syslog-tls://xxxx.papertrailapp.com:xxxxx
 $ cf bind-service blog-younjinjeong blog-younjinjeong-log # Blog 및 서비스 이름은 원하는것을 사용하도록 한다. 
 ~~~
 
+![Travis CI](/images/how-this-blog-works/PaperTrail.png "PaperTrail")
+
 
 여기까지 정상적으로 설정 되었다면 github 에 커밋과 푸시가 발생할 때마다 빌드와 배포의 동작이 반복된다. 테스트 해 보도록 하자. 
 
