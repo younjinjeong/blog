@@ -113,6 +113,27 @@ $(dirname $0)/build server
 
 --- 
 
+# Hugo 
+
+휴고의 설정 파일은 프로젝트 루트의 config.yaml 에 포함되어 있다. 이 파일을 참조해서 각자의 블로그를 설정하도록 하자. 
+
+~~~yaml
+languageCode: en-us
+Theme: "yjeong-ui"
+Title: Younjin Jeong's Blog
+taxonomies:
+  tag: "tags"
+  category: "categories"
+  author: "authors"
+Params:
+  SubTitle: Get busy living, or get busy dying
+baseURL: "http://blog.younjinjeong.io"
+# googleAnalytics: UA-39702075-1
+rssLimit: 25
+...
+~~~
+
+
 블로그의 동작을 확인 했다면, 이제 Github 에 신규 repository 를 만들어 블로그를 push 하자. 
 
 ~~~text
