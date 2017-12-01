@@ -6,7 +6,7 @@ categories:
 - Static Web 
 - CI/CD
 date: 2017-11-27T16:16:22Z
-draft: true
+draft: false
 short: |
   CI/CD 의 기본 방법을 사용한 본 블로그의 동작 방식에 대해 소개 합니다. 
 title: 이 블로그는 어떻게 동작하는가
@@ -83,7 +83,7 @@ hugo server 의 명령어로 실시간으로 페이지가 업데이트 되는 �
 
 여기서 bin 디렉토리르 살펴보자. 
 
-bin/build 파일 
+bin/build 파일 // TravisCI 나 로컬에서 블로그를 빌드할때 사용한다. 
 ~~~text
 #!/usr/bin/env bash
 
@@ -95,7 +95,7 @@ echo "Staging..."    && hugo --quiet -b http://blog-staging.younjinjeong.io     
 echo "Local..."      && hugo --quiet -b http://localhost                                       -d public/local --buildDrafts $@
 ~~~ 
 
-bin/new_post 파일 
+bin/new_post 파일 // 새로운 포스팅을 작성할때 사용한다. bin/new_post NEW_POST_NAME 
 ~~~text
 #!/usr/bin/env bash
 
@@ -104,17 +104,88 @@ bin/new_post 파일
 hugo new post/$1.md -k yaml
 ~~~
 
-bin/watch
+bin/watch  // localhost:1313 에 서버를 구동한다. 
 ~~~text
 #!/usr/bin/env bash
 
 $(dirname $0)/build server
 ~~~
 
+--- 
+
+블로그의 동작을 확인 했다면, 이제 Github 에 신규 repository 를 만들어 블로그를 push 하자. 
+
+~~~text
+$ cd blog 
+$ git init 
+$ git remote add origin https://github.com/your/repo.git 
+$ git add . 
+$ git commit -m 'initial blog commit' 
+$ git push origin master 
+~~~
+
+Git 및 Github 의 사용법에 대해서는 별도로 서술하지는 않기로 한다. 
 
 
+Travis-CI 의 경우 처음 페이지에 접근하면 (https://travis-ci.org) GitHub 계정의 권한을 요구하는데 필요하니까 주도록하자. 그러고 나면 한참동안 GitHub 의 코드 저장소들을 스캔한다. 블로그 목적으로 만든 저장소가 스캔되면 설정을 통해 아래의 환경 변수를 설정한다. 
+
+````
+|      key     |            value            | 
+|--------------|-----------------------------| 
+| $GITHUB_TOKEN| YOUR_TOKEN                  | 
+| $CF_PASSWORD | YOUR_CLOUD_FOUNDRY_PASSWORD | 
+| $CF_USER     | YOUR_CLOUD_FOUNDRY_USESR    |
+````
+
+보통 여기에는 다른 시스템에 대한 접근이 필요하지만 관련된 credential 을 코드 안에 넣을 수 없으므로 이곳에서 시스템 환경 변수로 설정해서 사용한다. 또는 각자의 목적에 따라 필요에 맞게 사용하면 되겠다. 
+
+![Travis CI](/images/how-this-blog-works/TravisCI-env.png "Travis CI")
+
+Travis CI 의 동작 방식은, 지정된 repository 에 .travis.yml 파일을 추가해 주면 동작한다. 아래는 현재 사용중인 설정이다. 기본적으로 hugo 바이너리를 적절한 위치에 준비하고, git 에 업로드된 블로그 소스를 바탕으로 static 파일들을 production/statging/local 용도로 public 디렉토리에 빌드하고 이를 deploy 커맨드를 통해 배포하는 형태다.  
+
+~~~yaml
+# Install the apt prerequisites
+addons:
+  apt:
+    packages:
+      # - python-pygments   # Syntax highlighting is already provided
+
+# Clean and don't fail
+install:
+  - rm -rf public || exit 0
+
+# Build the website
+script:
+  - tar xvzf bin/hugo_0.31_Linux-64bit.tar.gz -C bin/
+  - chmod +x bin/hugo
+  - export PATH=$PATH:bin/
+  - bin/build
+
+# Deploy to GitHub pages, 이 부분은 블로그를 깃헙의 페이지를 이용해서 구성하고자 하는 경우 사용할 수 있다. 
+deploy:
+  - provider: pages
+    repo: younjinjeong/younjinjeong.github.io
+    skip_cleanup: true
+    local_dir: public/tech/
+    github_token: $GITHUB_TOKEN # Set in travis-ci.org dashboard
+    on:
+      branch: master
+
+# Pivotal Web Service 에 배포하는 부분, 자신의 target 에 맞도록 수정한다. 
+  - provider: cloudfoundry
+    username: $CF_USER
+    password: $CF_PASSWORD
+    api: https://api.run.pivotal.io
+    organization: yjeong-org
+    space: staging
+    local_dir: public/staging
+~~~
+
+여기까지 정상적으로 설정 되었다면 github 에 커밋과 푸시가 발생할 때마다 빌드와 배포의 동작이 반복된다. 테스트 해 보도록 하자. 
 
 
+# 결론 
 
+본 구성의 핵심은 어떤 도구를 사용하더라도, 코드나 문서를 작성하고 이를 빌드하고 배포하는 과정에 있어 최대한 자동화를 구성하는 것이다. 빌드에 문제가 있거나, 만약 추가할 수 있는 테스트에 문제가 발생한다면 (shell exit code가 0이 아니라면) 배포는 진행되지 않을것이다. 이는 단순히 블로그를 가지고 구현한 것이지만, 구성을 참조한다면 코드 딜리버리 파이프라인에 확장해서 사용할 수도 있겠다. 
 
-    
+## draft 
