@@ -127,6 +127,8 @@ $ git push origin master
 Git 및 Github 의 사용법에 대해서는 별도로 서술하지는 않기로 한다. 
 
 
+# Travis CI 
+
 Travis-CI 의 경우 처음 페이지에 접근하면 (https://travis-ci.org) GitHub 계정의 권한을 요구하는데 필요하니까 주도록하자. 그러고 나면 한참동안 GitHub 의 코드 저장소들을 스캔한다. 블로그 목적으로 만든 저장소가 스캔되면 설정을 통해 아래의 환경 변수를 설정한다. 
 
 ````
@@ -180,6 +182,66 @@ deploy:
     space: staging
     local_dir: public/staging
 ~~~
+
+# Cloud Foundry 
+
+클라우드 파운드리에 배포는 위의 Travis CI 를 통해 진행되지만, 이때 프로젝트 루트의 manifest.yaml 파일을 참조한다. 파일은 아래와 같다. 
+
+~~~yaml 
+---
+applications:
+#- name: pushpop
+#  path: ./pushpop
+#  memory: 64M
+#  disk: 200M
+#  command: bundle exec pushpop jobs:run
+#  no-route: true
+#  health-check-type: none
+#  services:
+    # - keen.io
+    # - pushpop-sendgrid-account
+- name: younjinjeong-blog
+  path: ./public/prod
+  memory: 64M
+  disk: 200M
+  buildpack: https://github.com/cloudfoundry/staticfile-buildpack.git
+  services: 
+    - blog-autoscaler   # cf create-service app-autoscaler blog-autoscaler, 이후 바인드 
+    - blog-younjinjeong-log  # PaperTrail 연결을 위한 Custom 서비스, 이후 설명 
+- name: younjinjeong-staging
+  path: ./public/staging
+  memory: 64M
+  disk: 200M
+  buildpack: https://github.com/cloudfoundry/staticfile-buildpack.git
+
+- name: younjinjeong-cdn
+  path: ./public/cdn
+  memory: 64M
+  disk: 200M
+  buildpack: https://github.com/cloudfoundry/staticfile-buildpack.git
+~~~
+
+이를 그대로 사용하면 blog-autoscaler 가 없다는 메세지를 받게 될 것이다. 이를 위해서 로그인한 PWS(PCF)에서 cf create-service 를 수행해 줄 필요가 있다. 
+
+~~~text
+$ cf login -a https://api.run.pivotal.io 
+$ cf create-service app-autoscaler blog-autoscaler  
+$ cf bind-service younjinjeong-blog blog-autoscaler  # younjinjeong-blog 는 본인이 사용할 앱이름을 쓰도록 한다 
+~~~
+
+
+
+# PaperTrail 
+
+페이퍼 트레일은 원격 로깅을 위해 사용한다. 비슷한 방법으로 구글이나 스플렁크와 같은 서비스에 애플리케이션 로그를 전달하는 것이 가능하다. 페이퍼 트레일(https://papertrailapp.com/) 페이지에 가서 사인업하고 새로운 애플리케이션을 만들면 엔드포인트를 하나 할당 받을 수 있다. 
+
+그럼 아래와 같은 커맨드를 통해 cf 의 커스텀 서비스로 등록이 가능하다. 
+
+~~~text
+$ cf cups blog-younjinjeong-log -l syslog-tls://xxxx.papertrailapp.com:xxxxx
+$ cf bind-service blog-younjinjeong blog-younjinjeong-log # Blog 및 서비스 이름은 원하는것을 사용하도록 한다. 
+~~~
+
 
 여기까지 정상적으로 설정 되었다면 github 에 커밋과 푸시가 발생할 때마다 빌드와 배포의 동작이 반복된다. 테스트 해 보도록 하자. 
 
