@@ -91,6 +91,23 @@ FaaS (Function as a Service) is becoming a new way of build services. Beyond Mic
 [Netflix OSS](http://netflix.github.io) introducing various type of tools, that are optimized for Amazon Web Services. There are many kinds of tools, so we will explore one by one in detail. 
 
 
+## High Speed AutoRally Car implementation
+
+There's a project called 'Autorally', to implement high speed RC car runs track with MPPI learning. I've used LOSI's DBXL-e and NVIDIA Jetons TX2 and some sensors, cameras to implement this as my toy project. Audiences will see how ROS, Vision Computing, and Sensor Fusion basics. 
+
+* Introducing Autorally project
+* LOSI DBXL-e hardware changes 
+* Hall effect sensor 
+* ZED Cam 
+* Structure Sensor 
+* 9DoF IMU 
+* GPS and GLONASS 
+* NVIDIA Jetson TX2 
+* Dynamite 900kv motor/ESC control / VESC 
+* ROS 
+* Fun parts 
+
+
 
 # Hands on sessions 
 
