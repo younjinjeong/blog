@@ -51,6 +51,101 @@ FaaS (Function as a Service) is becoming a new way of build services. Beyond Mic
 * How it works 
 
 
+## Introducing Spring Cloud 
+
+[Spring](http://spring.io) is very popular framework in Java world. Recently, Spring team announced Spring Cloud Project based on Spring Framework, and Spring Boot, to leverage Cloud Based application implements. Cloud is extreme environment that changes very often. Cloud Environemt is different with Legacy system, so there's different way to build and deploy applications. After this session, audiences will get core concepts about how to make Cloud Native Applications with Spring Cloud Project. 
+
+* API Gateway 
+* Availability Zone aware Load Balancing 
+* Externalize Configurations 
+* Service Discovery 
+* Distributed Tracking 
+* Circuit Breaker 
+* Global Locks 
+* Distributed Messaging 
+
+
+
+## Dive Deep into Cloud Foundry 
+
+[Cloud Foundry](http://cloudfoundry.org) is a Platform to support Full Cycle Developers in terms of Delivery. With Cloud Foundry, Developers don't have to remember where's the databases are located, message brokers are placed, and how your application is load-balanced. All you need to do is using 'cf' command line interface, to prepare Backed-services for applications, Deploy new / exsisting applications, and bind them together. In this session, we will explore from Cloud Foundry Over View, and Dive Deep into its Architectures. Audiences will get an idea about "why Cloud Foundry is important for Developers". 
+
+* Introducing Cloud Foundry 
+* Technical Overview 
+* Archicture Dive Deep 
+* How to integrate with 3rd party services 
+
+
+## Deploying software with BOSH 
+
+[BOSH](http://bosh.io) is a tool from Google's BORG to software lifecycle management. Not like Ansible, Chef, Terraform, and similar tools, BOSH manages how to deploy software, and it's health managements, and providing self-healing mechanism base on Cloud. In this session, audiences will get how BOSH works, and how to implement software/cluster deployment with BOSH. 
+
+* Introducing BOSH 
+* How it works
+* Manage Stemcell, Release, Jobs, Deployments, and Canary Deployments 
+* In depth Topics 
+
+
+## Netflix OSS Dive Deep 
+
+[Netflix OSS](http://netflix.github.io) introducing various type of tools, that are optimized for Amazon Web Services. There are many kinds of tools, so we will explore one by one in detail. 
+
+
+
+# Hands on sessions 
+
+To make better understands based on each talks, hands-on sessions available. Each sessions designed for 3hours to half-day, and laptop preparations. 
+
+## Spring Cloud Hands-on 
+
+Audiences will deploy Spring Cloud tools and sample applications on their Laptop for Desktop. 
+
+## Concourse Hands-on 
+
+Audiences will create CI Pipeline on their Laptop/Desktop. 
+
+## BOSH Hands-on 
+
+Audiences will deploy ElastiCache cluster on Amazon Web Services or Google Cloud Platform. 
+
+## Project Riff Hands-on 
+
+Audiences will deploy Project Riff on their Laptop and also Deploy NodeJS/Spring Cloud Functions to Riff. 
+
+## Cloud Foundry Developer Hands-on 
+
+Developers will experience how they can deploy Java/PHP/Go/Python/Ruby/dotNET/Docker Image/Binary/Static Files to Cloud Foundry. And also explore how to prepare backed-services for those applications. 
+
+## Cloud Foundry Operations Hands-on 
+
+Operators will learn how to manage Cloud Foundry with BOSH, and how to create Tiles for Cloud Foundry Marketplace. And for DevOps, there's a special session for how to make Service Brokers for Cloud Foundry as well. 
+
+## GreenPlum Hands-on 
+
+In this session, audiences will deploy Greenplum on their desktop/laptop. And Link it to another tools such as Tableru, to visualize their data analytics. And also explore how MPP works, and how it's different with OLTP databases. If there's any request for production level deployments, Amazon Web Services could be used for this session. 
+
+## Netflix OSS Hands-on 
+
+Netflix OSS is quite hard to use natively. In this session, audiences will experience how to use Netflix OSS on their laptop. Base on the experience, Some of audience will learn how to use it on their production services. 
+
+## From LAMP Stack, to MSA 
+
+In this session, audience will deploy Single LAMP stack with WordPress. And based on service scale requirement, evaluate the LAMP stack to distributed service. 
+
+
+## HPC Cluster 101 
+
+In this session, audiences will get an Idea how to make large scale Batch Procssing service. BOINC, Queue Managers like torque, and Compute node designs for MPI or just Map/Reduce clusters to compute such as Rendering, Molecule calcualtions, and GPGPU workloads. 
+
+## In-Memory-Cache-Grid Hands-on with Gemfire 
+
+In this session, audiences will explore how to create WAN level clusters to manage in memory key-value store that leverages high-speed data references. IMDG is one of key tools to manage RDMBS overloads, by having memory stores as trasactional buffer or cache. Ticketing systems, Product selling, and Digital Marketing expampels will be used. 
+
+
+## Spring Cloud Data Flow hands-on 
+
+Data Pipeline is one of critical part nowadays. Spring Cloud Data Flow provides pipelining capability to eliminate Data Monolith. In this session, audiences will get logs from Applicaitons, and send the logs to Spark Micro Batch Processing and Save those data to IMDG and MPP based DW. After this Hands-on, audiences will get an idea of Data MicroServices, and how to use it. 
+
 
 # My Bio 
 
