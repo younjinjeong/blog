@@ -53,32 +53,32 @@ _translated from [Chaos Toolkit LOVES Chaos Monkey for Spring Boot](https://medi
 
 [카오스 툴킷](https://chaostoolkit.org/)의 첫번째 릴리즈에서는 스프링 부트에서 카오스 몽키를 애플리케이션 레벨에서 지원하기 위해 [chaostoolkit-spring driver](https://chaostoolkit.org/extensions/spring)를 제공한다. 
 
->"[chaostoolkit-spring 인큐베이터 프로젝트](https://github.com/chaostoolkit-incubator/chaostoolkit-spring)는 오픈 소스이며, 자유롭게 사용 가능하다."
+>"[chaostoolkit-spring 인큐베이터 프로젝트](https://github.com/chaostoolkit-incubator/chaostoolkit-spring)는 오픈 소스이므로 자유롭게 사용 가능하다."
 
 {{< responsive-figure src="/images/ChaosMonkey-for-Spring-Boot/SpringDriver.png" class="center" >}}
 
-이 첫 릴리즈는 스프링 부트 애플리케이션과 서비스에 다양한 카오스 엔지니어링을 사용할 수 있도록 [스프링 부트용 카오스 몽키](https://github.com/chaostoolkit-incubator/chaostoolkit-spring) 지원이 아래의 내용과 함께 [codecentric](https://github.com/codecentric)에 의해 포함되었다. 
+이 첫 릴리즈는 스프링 부트 애플리케이션과 서비스에 다양한 카오스 엔지니어링을 적용해 볼 수 있도록 [스프링 부트 카오스 몽키](https://github.com/chaostoolkit-incubator/chaostoolkit-spring) 지원이 [codecentric](https://github.com/codecentric)에 의해 포함되었다. 
  
 
-- 특정 서비스의 런타임에서 **카오스 몽키 기능을 켜거나 끌 수** 있다. (카오스 엔지니어링 실험을 하는 동안만 사용하고자 할때 매우 유용하다.)
+- 특정 서비스의 런타임에서 **카오스 몽키 기능을 켜거나 끌 수** 있다. (카오스 엔지니어링 실험을 하는 동안만 사용하고 싶을때 매우 유용하다.)
 - 특정 서비스의 런터임에서 **카오스 공격(assults) 설정과 활성화를 지원**한다. 
 - **카오스 몽키의 감시자(watcher)와 공격(assaults) 설정을 기록하고 감사**할 수 있다. 이런 정보의 수집은 향후 분석을 위해 매우 유용하다. 
 
 
-이 같은 동작은 카오스 툴킷 정의에 포함되어 있다. 몇가지 예제를 살펴보자. 
+몇가지 예제를 살펴보자. 
 
 > 여기에 소개된 예제들은 모두 [깃헙 링크](https://github.com/chaosiq/demos/tree/master/spring-boot-chaos-monkey)에서 찾아볼 수 있다. 
 
 
 ## 실험 예제 1: "의존 관계에 있는 서비스가 죽으면 우리 서비스는 어떻게 되지?" 
 
-스프링 부트용 카오스 몽키에서 제공하는 가장 기본적인 기능은, 스프링 부트 애플리케이션이 스스로를 죽여 봄으로서 의존 관계에 있는 다른 서비스가 어떻게 대응하는지 실험해 보는 것이다. 이 기능은 아래의 가설을 실험하기 위한 것이다. 
+스프링 부트용 카오스 몽키에서 제공하는 가장 기본적인 기능은, 스프링 부트 애플리케이션이 스스로를 죽여 봄으로서 의존 관계에 있는 다른 서비스가 어떻게 대응하는지 실험해 보는 것이다. 이 기능을 통해 아래의 가설을 바탕으로 실험해 볼 수 있다.
 
 > "내 서비스가 의존하고 있는 다른 서비스가 의도치 않게 죽으면 어떻게 될 것인가?" 
 
-이 예제에서는 consumer와 producer, 2개의 서비스를 준비 한다. consumer는 별도의 장애에 대한 고려 없이 producer를 직접 참조하는 구조로 되어 있다. 
+이 예제에서는 consumer와 producer, 2개의 서비스를 준비 한다. consumer는 별도의 장애에 대한 고려 없이 producer를 직접 호출하는 구조로 되어 있다. 
 
-예제에 정의된 실험을 스프링 부트용 카오스 몽키를 사용 하면 chaostoolkit-spring을 사용하면 이후 보안 취약점이 될 수 있는 점을 잊지 말자. (역주: 따라서 테스트 이외의 프로덕션 배포에도 사용하는 것은 주의 하도록 하자)
+예제에 정의된바와 같이 스프링 부트용 카오스 몽키 테스트를 위해 chaostoolkit-spring 드라이버를 사용하는 것은 실 서비스에서 취약점이 될 수 있는 점을 잊지 말자. (역주: 따라서 테스트 이외의 실 서비스 배포에 적용하는 것은 주의 하도록 하자.)
 
 [Github link](https://gist.github.com/russmiles/7f4a99110fa9cb6d90025429845bc463#file-kill-dependency-experiment-json)
 
@@ -152,14 +152,14 @@ _translated from [Chaos Toolkit LOVES Chaos Monkey for Spring Boot](https://medi
 }
 ~~~ 
 
-이 실험에서 첫째로 확인해야 하는 것은 provider 서비스에서 enable_chaosmonkey를 사용해서 스프링 부트용 카오스 몽키를 활성화 했는가의 여부다. (라인 25 참고)
+이 실험에서 첫째로 확인할 사항은 provider 서비스에서 enable_chaosmonkey를 명시해서 스프링 부트용 카오스 몽키를 활성화 하는 것이다. (라인 25 참고)
 
-두번째로는 서비스 호출 또는 요청이 발생 할때마다 killApplicationActive 공격 트리거가 동작하도록 활성화 되어 있는지 확인하자. (라인 37 참고)
+두번째는 서비스 호출 또는 요청이 발생 할때마다 killApplicationActive 공격 트리거가 동작하도록 활성화 해야 한다. (라인 37 참고)
 
-마지막으로 정상 상태 가정(steady-state-hypothesis)을 정의하고 (라인 9 참고), killApplicationActive 공격(라인 58)을 트리거 하자. 
+마지막으로 정상 상태(steady-state-hypothesis)를 정의하고 (라인 9 참고), killApplicationActive 공격(라인 58)을 트리거 하자. 
 
 
-공격은 스프링 부트 애플리케이션 설정의 감시자(watcher)를 통해 트리거 된다. 이 설정은 스프링 부트용 카오스 몽키에서 제공되며, 런타임에서 변경할 수 없다. 아래의 기본 설정의 내용은 provider 애플리케이션이 (@Service 사용으로 인해) 유입되는 모든 요청에 watcher를 동작하도록 한다. (라인 13 참고)
+공격은 스프링 부트 애플리케이션 설정의 감시자(watcher)를 통해 트리거 된다. 이 설정은 스프링 부트용 카오스 몽키에서 제공되는 것이며, 런타임에서 변경할 수는 없다. 아래의 기본 설정의 내용은 provider 애플리케이션이 (@Service 사용으로 인해) 유입되는 모든 요청에 watcher를 적용하는 것을 보여준다. (라인 13 참고)
 
 [Github Link to Spring Boot application properties](https://gist.github.com/russmiles/df97c46677e5b6c7eb428cd8af6f06d3#file-application-properties)
 
@@ -181,12 +181,12 @@ chaos.monkey.watcher.restController=true
 chaos.monkey.assaults.level=1
 ~~~
 
-이를 통해 provider 서비스에 문제가 발생했을때 consumer 서비스가 어떻게 장애에 대응할 수 있는지 실험해 볼 수 있다. 
+이 예제를 바탕으로 provider 서비스에 문제가 발생했을때 consumer 서비스가 어떻게 장애에 대응할 수 있는지 실험해 볼 수 있다. 
 
 
 ## 실험 예제 2. "의존 관계에 있는 서비스의 응답이 느려지면 어떻게 하지?" 
 
-스프링 부트용 카오스 몽키에는 지연시간 설정 기능이 포함되어 있으며, 아래의 가정을 실험하기 위해 제공된다. 
+스프링 부트용 카오스 몽키에는 서비스에 지연시간 설정을 적용할 수 있는 기능이 포함되어 있으며, 아래의 가정을 바탕으로 테스트 수행이 가능하다. 
 
 >"provider 서비스의 응답이 갑자기 느려진 상황에서 consumer 서비스는 어떻게 대응하는가?" 
 
@@ -254,22 +254,20 @@ chaos.monkey.assaults.level=1
 }
 ~~~ 
 
-지연 시간 설정을 위해 이전 설정과 다른 부분은 라인 43-45에 있다. 이 부분에서 카오스 도구를 통해 서비스와 요청에 대한 지연 시간 파라 메터를 설정 했다. 이 설정을 통해 consumer 서비스는 아주 느리게 응답하는 provider 서비스에 대해 어떻게 반응하는지를 실험해 볼 수 있다. 
+지연 시간 설정이 적용된 부분은 라인 43-45에 있다. 이 부분에서 카오스 툴킷을 통해 서비스 요청에 대한 지연 시간을 적용 한다. 따라서 consumer 서비스가 아주 느리게 응답하도록 구성된 provider 서비스에 대해 어떻게 반응하는지를 실험해 볼 수 있다. 
 
-
-이 두가지의 간단한 예제는 카오스 툴킷을 사용해서 애플리케이션 레벨에서 발생할 수 있는 취약점을 실험할 수 있다. 추가로 소개되는 [데모 코드](https://github.com/chaosiq/demos/tree/master/spring-boot-chaos-monkey)를 통해 어떤 기능을 더 사용할 수 있는지 살펴보자. 우리 개발팀은 여러분의 피드백을 언제나 환영한다. 
+소개된 두가지의 간단한 예제를 바탕으로 카오스 툴킷을 사용해서 애플리케이션 레벨에서 발생할 수 있는 장애 발생시 취약점을 실험할 수 있다. 추가로 소개되는 [데모 코드](https://github.com/chaosiq/demos/tree/master/spring-boot-chaos-monkey)를 통해 어떤 기능을 더 사용할 수 있는지 살펴보자. 카오스 툴킷 개발팀은 개발자 여러분의 피드백을 언제나 환영한다. 
 
 
 # 오픈 소스와 확장 
 
-카오스 툴킷을 무료 오픈 소스로 공개하는 목적은 애플리케이션 수준에서 카오스 엔지니어링을 **_더 쉽고 빠르게_** 사용할 수 있도록 하는 것이며, 가능한 경우 새로운 오픈 소스 또는 상용 프로젝트로 손쉽게 발전을 위해서이다. 
+카오스 툴킷을 무료 오픈 소스로 공개하는 목적은 애플리케이션 수준에서 카오스 엔지니어링을 **더 쉽고 빠르게** 사용할 수 있도록 하는 것이며, 가능한 경우 새로운 오픈 소스 또는 상용 프로젝트로 손쉽게 발전할 수 있도록 하기 위해서이다. 
 
 [카오스 툴킷](https://chaostoolkit.org/) 커뮤니티는 스프링 부트용 카오스 몽키 프로젝트의 발전과 더 많은 사용자들이 모든 기능을 사용할 수 있도록 노력할 것이다. 
 
 
 # 카오스 툴킷 프로젝트에 참여하기 
 
-[카오스 툴킷](https://chaostoolkit.org/)은 커뮤니티가 주도하는 오픈 소스 프로젝트이며, 모든 사용자가 카오스 엔지니어링을 통한 경험을 자동화하는 것을 목표로 한다. 특정 벤더에 종속적이지 않은 자유로운 프로젝트이며, 카오스 엔지니어링에 대해 배울 수 있는 좋은 프로젝트인 동시에, 여러분의 경험을 위한 기반으로 사용할 수 있으며 여러분의 카오스 엔지니어링 경험과 아이디어를 가져올 수도 있다. 
+[카오스 툴킷](https://chaostoolkit.org/)은 커뮤니티가 주도하는 오픈 소스 프로젝트이며, 모든 사용자가 카오스 엔지니어링을 자동화를 통해 사용할 수 있는 것을 목표로 한다. 특정 벤더에 종속적이지 않은 자유로운 프로젝트이며, 카오스 엔지니어링에 대해 배울 수 있는 좋은 프로젝트인 동시에, 경험을 통한 학습 기반으로 사용할 수 있으며, 카오스 엔지니어링 경험과 아이디어를 프로젝트에 적용할 수도 있을 것이다. 
 
-언제든 [이슈 및 새로운 기능을 제기](https://github.com/chaostoolkit)하거나, 코드를 작성하거나, [우리의 슬랙](https://join.chaostoolkit.org/) 채널에 가입을 통해 이 프로젝트에 기여할 수 있다. 
-
+프로젝트에 관심이 있는 분들은 언제든 [이슈 및 새로운 기능을 제기](https://github.com/chaostoolkit)하거나, 코드로 제공하거나, [슬랙](https://join.chaostoolkit.org/) 채널 가입을 통해 이 프로젝트에 기여할 수 있다. 
