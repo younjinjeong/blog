@@ -57,7 +57,7 @@ _translated from [Chaos Toolkit LOVES Chaos Monkey for Spring Boot](https://medi
 
 {{< responsive-figure src="/images/ChaosMonkey-for-Spring-Boot/SpringDriver.png" class="center" >}}
 
-이 첫 릴리즈는 스프링 부트 애플리케이션과 서비스에 다양한 카오스 엔지니어링을 사용할 수 있도록 [스프링 부트용 카오스 몽키](https://github.com/chaostoolkit-incubator/chaostoolkit-spring) 지원이 아래의 내용과 함께 포함되었다. 
+이 첫 릴리즈는 스프링 부트 애플리케이션과 서비스에 다양한 카오스 엔지니어링을 사용할 수 있도록 [스프링 부트용 카오스 몽키](https://github.com/chaostoolkit-incubator/chaostoolkit-spring) 지원이 아래의 내용과 함께 [codecentric](https://github.com/codecentric)에 의해 포함되었다. 
  
 
 - 특정 서비스의 런타임에서 **카오스 몽키 기능을 켜거나 끌 수** 있다. (카오스 엔지니어링 실험을 하는 동안만 사용하고자 할때 매우 유용하다.)
