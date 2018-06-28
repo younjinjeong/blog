@@ -201,6 +201,6 @@ Data Pipeline is one of critical part nowadays. Spring Cloud Data Flow provides 
 Base on Hugo blogging tool, audiences will create a test/deploy pipeline for a Blog. Create Markdown post, commit and push it to Github, Travis-CI gets the commit and Deploy a new Post to Pivotal Web Services. ;;;
 
 
-# My Bio 
+# My Bio - 
 
 It's been more than 16 years that I've been worked in IT industry. Started as Kenel & Driver engineer, than system engineer, and now working as DevOps and Technologist. Designed global service systems and its flow with AWS since 2009, and involved as DevOps engineer to build Korea Telecom's public cloud at 2011. Worked for 1st open source based hosting company in Korea as researcher, to solve long and short term issues. Also worked as AWS Solutions Architecture and helped more than 500 companies to move their applications to AWS Cloud. Now working at Pivotal as Principal Technologist, to write articles, speaking at events, creat demo, and developer engagements in Korea and Japan. 
