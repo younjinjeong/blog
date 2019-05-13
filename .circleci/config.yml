@@ -1,0 +1,25 @@
+version: 2.1
+
+workflows:
+  "Do everything"
+
+    jobs:
+      build:
+        docker:
+          - image: circleci/node:4.8.2
+        steps:
+          - checkout
+          - run:
+            command: |
+              tar xvzf bin/hugo_0.31_Linux-64bit.tar.gz -C bin/
+              chmod +x bin/hugo
+              export PATH=$PATH:bin/
+              bin/hugo
+              ls -alt public/
+
+
+
+            
+
+
+        
