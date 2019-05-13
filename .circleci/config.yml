@@ -6,13 +6,11 @@ jobs:
       - image: circleci/node:4.8.2
     steps:
       - checkout
-      - run:
-        command: |
-          tar xvzf bin/hugo_0.31_Linux-64bit.tar.gz -C bin/
-          chmod +x bin/hugo
-          export PATH=$PATH:bin/
-          bin/hugo
-          ls -alt public/
+      - run: tar xvzf bin/hugo_0.31_Linux-64bit.tar.gz -C bin/
+      - run: chmod +x bin/hugo
+      - run: export PATH=$PATH:bin/
+      - run: bin/hugo
+      - run: ls -alt public/
 
 
 
