@@ -17,12 +17,14 @@ jobs:
             curl -v -L -o cf-cli_amd64.deb 'https://cli.run.pivotal.io/stable?release=debian64&source=github'
             sudo dpkg -i cf-cli_amd64.deb
             cf -v
-            cf api https://api.run.pivotal.io  # alternately target your private Cloud Foundry deployment
+            cf api ${CF_ENDPOINT}  # alternately target your private Cloud Foundry deployment
             cf auth "$CF_USER" "$CF_PASSWORD"
             cf target -o "$CF_ORG" -s "$CF_SPACE"
       - run:
           name: CF deploy
           command: |
-            cf login -a ${CF_ENDPOINT} -u ${CF_USER} -s ${CF_PASSWORD}  -o ${CF_ORG} -s ${CF_SPACE} 
+            cf api ${CF_ENDPOINT}  # alternately target your private Cloud Foundry deployment
+            cf auth "$CF_USER" "$CF_PASSWORD"
+            cf target -o "$CF_ORG" -s "$CF_SPACE"
             cd public/
-            cf push ${CF_APPNAME} -m 512M 
+            cf push ${CF_APPNAME} -m 512M -b staticfile_buildpack
