@@ -25,14 +25,15 @@ jobs:
             cf target -o "$CF_ORG" -s "$CF_SPACE"
       
   deploy:
-    - run:
-          name: CF deploy
-          command: |
-            cf api ${CF_ENDPOINT}  # alternately target your private Cloud Foundry deployment
-            cf auth "$CF_USER" "$CF_PASSWORD"
-            cf target -o "$CF_ORG" -s "$CF_SPACE"
-            cd public/
-            cf push ${CF_APPNAME} -m 512M -b staticfile_buildpack
+    steps:
+      - run:
+            name: CF deploy
+            command: |
+              cf api ${CF_ENDPOINT}  # alternately target your private Cloud Foundry deployment
+              cf auth "$CF_USER" "$CF_PASSWORD"
+              cf target -o "$CF_ORG" -s "$CF_SPACE"
+              cd public/
+              cf push ${CF_APPNAME} -m 512M -b staticfile_buildpack
 
 workflows:
   version: 2
