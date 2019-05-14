@@ -20,7 +20,6 @@ jobs:
           command: |
             curl -v -L -o cf-cli_amd64.deb 'https://cli.run.pivotal.io/stable?release=debian64&source=github'
             sudo dpkg -i cf-cli_amd64.deb
-            cp /usr/bin/cf bin/
             cf -v
             cf api ${CF_ENDPOINT}  # alternately target your private Cloud Foundry deployment
             cf auth "$CF_USER" "$CF_PASSWORD"
@@ -29,7 +28,6 @@ jobs:
           root: ~/
           paths:
             - circleci-blog
-            - bin/
         
       
   deploy:
@@ -42,8 +40,8 @@ jobs:
       - run:
             name: CF deploy
             command: |
-              ls bin/
-              export PATH=$PATH:bin/
+              curl -v -L -o cf-cli_amd64.deb 'https://cli.run.pivotal.io/stable?release=debian64&source=github'
+              sudo dpkg -i cf-cli_amd64.deb
               cf -v
               cf api ${CF_ENDPOINT}  # alternately target your private Cloud Foundry deployment
               cf auth "$CF_USER" "$CF_PASSWORD"
@@ -53,8 +51,7 @@ jobs:
 
 workflows:
   version: 2
-  jobs:
-  - build
-  - deploy:
-    requires:
-      - build
+  workflow:
+    jobs:
+    - build
+    - deploy
