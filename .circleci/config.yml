@@ -40,11 +40,11 @@ jobs:
     steps:
       - attach_workspace:
         at: ~/
-    - run:
-        name: HUGO benchmark test for demo 
-        command: |
-          bin/hugo benchmark
-          bin/hugo check ulimit
+      - run:
+          name: HUGO benchmark test for demo 
+          command: |
+            bin/hugo benchmark
+            bin/hugo check ulimit
 
   deploy:
     working_directory: ~/circleci-blog
