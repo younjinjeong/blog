@@ -26,7 +26,7 @@ jobs:
             cf auth "$CF_USER" "$CF_PASSWORD"
             cf target -o "$CF_ORG" -s "$CF_SPACE"
       - persist_to_workspace:
-          root: ~/circleci-blog
+          root: ~/
           paths:
             - public
             - bin
@@ -38,7 +38,7 @@ jobs:
       - image: circleci/node:4.8.2
     steps:
       - attach_workspace:
-          at: ~/circleci-blog
+          at: ~/
       - run:
             name: CF deploy
             command: |
