@@ -95,4 +95,6 @@ AWS Snowmobile : https://aws.amazon.com/blogs/aws/aws-snowmobile-move-exabytes-o
 
 아울러 피보탈의 클라우드 파운더리에서 Amazon Service broker 를 통해 다양한 신규 서비스를 애플리케이션 개발자가 손쉽게 연동해서 사용할 날이 오기를 기대한다. 
 
+(CircleCI Test)
+
 (younjin.jeong@gmail.com, 정윤진)
