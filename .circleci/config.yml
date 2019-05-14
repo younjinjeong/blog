@@ -30,10 +30,8 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
-            - circleci-blog
-            - public/
-        
-      
+            - public
+
   deploy:
     working_directory: ~/circleci-blog
     docker:
@@ -52,7 +50,7 @@ jobs:
               cf target -o "$CF_ORG" -s "$CF_SPACE"
               ls -alt ~/
               ls -alt ~/circleci-blog/
-              cd ~/circleci-blog/public/
+              cd public/
               cf push ${CF_APPNAME} -m 512M -b staticfile_buildpack
 
 workflows:
