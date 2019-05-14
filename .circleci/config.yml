@@ -15,6 +15,7 @@ jobs:
             export PATH=$PATH:bin/
       - run: bin/hugo
       - run: ls -alt public/
+      - run: pwd
       - run:
           name: Setup CF CLI
           command: |
