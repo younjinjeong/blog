@@ -15,6 +15,7 @@ jobs:
             export PATH=$PATH:bin/
       - run: bin/hugo
       - run: ls -alt public/
+      - run: ls -alt
       - run: pwd
       - run:
           name: Setup CF CLI
@@ -30,6 +31,7 @@ jobs:
           root: ~/
           paths:
             - circleci-blog
+            - public/
         
       
   deploy:
@@ -49,6 +51,7 @@ jobs:
               cf auth "$CF_USER" "$CF_PASSWORD"
               cf target -o "$CF_ORG" -s "$CF_SPACE"
               ls -alt ~/
+              ls -alt ~/circleci-blog/
               cd ~/circleci-blog/public/
               cf push ${CF_APPNAME} -m 512M -b staticfile_buildpack
 
