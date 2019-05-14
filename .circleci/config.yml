@@ -16,16 +16,6 @@ jobs:
       - run: bin/hugo
       - run: ls -alt public/
       - run: pwd
-      - run:
-          name: Setup CF CLI
-          command: |
-            curl -v -L -o cf-cli_amd64.deb 'https://cli.run.pivotal.io/stable?release=debian64&source=github'
-            sudo dpkg -i cf-cli_amd64.deb
-            cf -v
-            cf api ${CF_ENDPOINT}  # alternately target your private Cloud Foundry deployment
-            cf auth "$CF_USER" "$CF_PASSWORD"
-            cf target -o "$CF_ORG" -s "$CF_SPACE"
-          
       - persist_to_workspace:
           root: ~/
           paths:
@@ -54,7 +44,7 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-            name: CF deploy
+            name: Setup CF CLI and deploy HUGO generated public site
             command: |
               curl -v -L -o cf-cli_amd64.deb 'https://cli.run.pivotal.io/stable?release=debian64&source=github'
               sudo dpkg -i cf-cli_amd64.deb
