@@ -26,6 +26,7 @@ jobs:
             cf api ${CF_ENDPOINT}  # alternately target your private Cloud Foundry deployment
             cf auth "$CF_USER" "$CF_PASSWORD"
             cf target -o "$CF_ORG" -s "$CF_SPACE"
+            cp /usr/bin/cf bin/
           
       - persist_to_workspace:
           root: ~/
@@ -39,7 +40,7 @@ jobs:
       - image: circleci/node:4.8.2
     steps:
       - attach_workspace:
-        at: ~/
+          at: ~/
       - run:
           name: HUGO benchmark test for demo 
           command: |
@@ -63,7 +64,7 @@ jobs:
               cf auth "$CF_USER" "$CF_PASSWORD"
               cf target -o "$CF_ORG" -s "$CF_SPACE"
               ls -alt ~/
-              ls -alt ~/circleci-blog/
+              ls -alt ~/circleci-blog/bin/
               cd public/
               cf push ${CF_APPNAME} -m 512M -b staticfile_buildpack
 
