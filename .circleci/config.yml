@@ -33,6 +33,19 @@ jobs:
             - circleci-blog/public
             - circleci-blog/bin
 
+  test:
+    working_directory: ~/circleci-blog
+    docker:
+      - image: circleci/node:4.8.2
+    steps:
+      - attach_workspace:
+        at: ~/
+    - run:
+        name: HUGO benchmark test for demo 
+        command: |
+          bin/hugo benchmark
+          bin/hugo check ulimit
+
   deploy:
     working_directory: ~/circleci-blog
     docker:
@@ -59,6 +72,10 @@ workflows:
   build-and-deploy:
     jobs:
     - build
+    - test:
+        requires:
+          - build
     - deploy:
         requires:
           - build
+          - test
