@@ -25,6 +25,7 @@ jobs:
             cf api ${CF_ENDPOINT}  # alternately target your private Cloud Foundry deployment
             cf auth "$CF_USER" "$CF_PASSWORD"
             cf target -o "$CF_ORG" -s "$CF_SPACE"
+          
       - persist_to_workspace:
           root: ~/
           paths:
@@ -47,6 +48,7 @@ jobs:
               cf api ${CF_ENDPOINT}  # alternately target your private Cloud Foundry deployment
               cf auth "$CF_USER" "$CF_PASSWORD"
               cf target -o "$CF_ORG" -s "$CF_SPACE"
+              ls -alt ~/
               cd ~/circleci-blog/public/
               cf push ${CF_APPNAME} -m 512M -b staticfile_buildpack
 
