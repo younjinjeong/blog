@@ -15,7 +15,6 @@ jobs:
             export PATH=$PATH:bin/
       - run: bin/hugo
       - run: ls -alt public/
-      - run: ls -alt
       - run: pwd
       - run:
           name: Setup CF CLI
@@ -60,6 +59,7 @@ jobs:
             command: |
               curl -v -L -o cf-cli_amd64.deb 'https://cli.run.pivotal.io/stable?release=debian64&source=github'
               sudo dpkg -i cf-cli_amd64.deb
+              bin/cf -v
               cf -v
               cf api ${CF_ENDPOINT}  # alternately target your private Cloud Foundry deployment
               cf auth "$CF_USER" "$CF_PASSWORD"
