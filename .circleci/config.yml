@@ -2,15 +2,10 @@ version: 2
 
 jobs:
   build:
+    working_directory: ~/circleci-blog
     docker:
       - image: circleci/node:4.8.2
     steps:
-      - persist_to_workspace:
-          root: /tmp/workspace
-          paths:
-            - public/*
-            - bin/cf
-            - bin/hugo
       - checkout
       - run:
           name: Setup HUGO 
@@ -25,20 +20,30 @@ jobs:
           command: |
             curl -v -L -o cf-cli_amd64.deb 'https://cli.run.pivotal.io/stable?release=debian64&source=github'
             sudo dpkg -i cf-cli_amd64.deb
+            cp /usr/bin/cf bin/
             cf -v
             cf api ${CF_ENDPOINT}  # alternately target your private Cloud Foundry deployment
             cf auth "$CF_USER" "$CF_PASSWORD"
             cf target -o "$CF_ORG" -s "$CF_SPACE"
+      - persist_to_workspace:
+          root: ~/circleci-blog
+          paths:
+            - public
+            - bin
+        
       
   deploy:
+    working_directory: ~/circleci-blog
     docker:
       - image: circleci/node:4.8.2
     steps:
       - attach_workspace:
-          at: /tmp/workspace
+          at: ~/circleci-blog
       - run:
             name: CF deploy
             command: |
+              export PATH=$PATH:bin/
+              chmod +x bin/cf
               cf -v
               cf api ${CF_ENDPOINT}  # alternately target your private Cloud Foundry deployment
               cf auth "$CF_USER" "$CF_PASSWORD"
