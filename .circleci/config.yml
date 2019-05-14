@@ -25,7 +25,6 @@ jobs:
             cf api ${CF_ENDPOINT}  # alternately target your private Cloud Foundry deployment
             cf auth "$CF_USER" "$CF_PASSWORD"
             cf target -o "$CF_ORG" -s "$CF_SPACE"
-            cp /usr/local/bin/cf bin/
           
       - persist_to_workspace:
           root: ~/
@@ -57,13 +56,13 @@ jobs:
       - run:
             name: CF deploy
             command: |
-              export PATH=$PATH:bin/
+              curl -v -L -o cf-cli_amd64.deb 'https://cli.run.pivotal.io/stable?release=debian64&source=github'
+              sudo dpkg -i cf-cli_amd64.deb
               cf -v
               cf api ${CF_ENDPOINT}  # alternately target your private Cloud Foundry deployment
               cf auth "$CF_USER" "$CF_PASSWORD"
               cf target -o "$CF_ORG" -s "$CF_SPACE"
-              ls -alt ~/
-              ls -alt ~/circleci-blog/bin/
+              ls -alt
               cd public/
               cf push ${CF_APPNAME} -m 512M -b staticfile_buildpack
 

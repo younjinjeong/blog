@@ -3,6 +3,7 @@ public
 prod
 staging
 .envrc
+.idea
 
 
 # Created by https://www.gitignore.io/api/intellij
