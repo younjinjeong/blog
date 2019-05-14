@@ -30,7 +30,8 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
-            - public
+            - circleci-blog/public
+            - circleci-blog/bin
 
   deploy:
     working_directory: ~/circleci-blog
