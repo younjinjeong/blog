@@ -6,9 +6,12 @@ jobs:
       - image: circleci/node:4.8.2
     steps:
       - checkout
-      - run: tar xvzf bin/hugo_0.31_Linux-64bit.tar.gz -C bin/
-      - run: chmod +x bin/hugo
-      - run: export PATH=$PATH:bin/
+      - run:
+          name: Setup HUGO 
+          command: |
+            tar xvzf bin/hugo_0.31_Linux-64bit.tar.gz -C bin/
+            chmod +x bin/hugo
+            export PATH=$PATH:bin/
       - run: bin/hugo
       - run: ls -alt public/
       - run:
@@ -20,7 +23,9 @@ jobs:
             cf api ${CF_ENDPOINT}  # alternately target your private Cloud Foundry deployment
             cf auth "$CF_USER" "$CF_PASSWORD"
             cf target -o "$CF_ORG" -s "$CF_SPACE"
-      - run:
+      
+  deploy:
+    - run:
           name: CF deploy
           command: |
             cf api ${CF_ENDPOINT}  # alternately target your private Cloud Foundry deployment
@@ -28,3 +33,9 @@ jobs:
             cf target -o "$CF_ORG" -s "$CF_SPACE"
             cd public/
             cf push ${CF_APPNAME} -m 512M -b staticfile_buildpack
+
+workflows:
+  version: 2
+    jobs:
+      - build
+      - deploy
